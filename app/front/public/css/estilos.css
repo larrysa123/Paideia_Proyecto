@@ -1,0 +1,94 @@
+/* src/public/css/estilos.css */
+
+/* --- VARIABLES PAIDEIA --- */
+:root {
+    --color-primary: #2C5282;   /* Azul Egeo */
+    --color-secondary: #D69E2E; /* Dorado Atenea */
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Roboto', sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: #F7F9FC;
+}
+
+/* --- TIPOGRAFÍA --- */
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+}
+
+/* --- COMPONENTES BOOTSTRAP PERSONALIZADOS --- */
+
+/* Navbar */
+.bg-paideia {
+    background-color: var(--color-primary) !important;
+}
+
+/* Botones */
+.btn-paideia {
+    background-color: var(--color-primary);
+    color: white;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: 1px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-paideia:hover {
+    background-color: #1A365D; /* Azul más oscuro */
+    color: white;
+}
+
+/* Tarjetas (Cards) */
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    border-bottom: 3px solid var(--color-secondary);
+}
+
+.precio-texto {
+    color: var(--color-secondary);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+/* Estilos específicos para formularios (Registro/Login) */
+.contenedor-form {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-top: 5px solid var(--color-primary);
+}
+
+/* --- CORRECCIONES NAVBAR --- */
+
+/* 1. Arreglo del Logo PAIDEIA */
+/* Lo forzamos a blanco siempre, ya que el fondo es azul oscuro */
+.navbar-brand {
+    color: white !important;
+}
+
+/* Opcional: Que se ponga dorado al pasar el ratón */
+.navbar-brand:hover {
+    color: var(--color-secondary) !important;
+}
+
+/* 2. Arreglo del Botón "Acceder" (Outline Light) */
+/* Cuando pasamos el ratón (:hover), el fondo se vuelve blanco,
+   así que obligamos al texto a ponerse AZUL para que se lea. */
+.navbar .btn-outline-light:hover {
+    background-color: #D69E2E;
+    color: var(--color-primary) !important; 
+    border-color: white;
+}
