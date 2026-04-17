@@ -11,6 +11,8 @@ require_once __DIR__ . '/../../../app/config/config.php';
 
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">F
+
 
     <link href="<?= RUTA_CSS ?>estilos.css" rel="stylesheet">
 
@@ -31,22 +33,25 @@ require_once __DIR__ . '/../../../app/config/config.php';
                 <ul class="navbar-nav ms-auto">
                     <?php if (isset($_SESSION['user'])): ?>
 
-                        <?php 
+                        <?php
                         // Extraemos el rol de la sesión para usarlo cómodamente
-                        $rol = $_SESSION['user']['id_rol']; 
+                        $rol = $_SESSION['user']['id_rol'];
                         ?>
 
-                        <?php if ($rol == 1): // ALUMNO ?>
+                        <?php if ($rol == 1): // ALUMNO 
+                        ?>
                             <li class="nav-item">
                                 <a class="nav-link text-white" href="<?= RUTA_VISTAS ?>alumno/mis_cursos.php">Mis Cursos</a>
                             </li>
-                        
-                        <?php elseif ($rol == 2): // PROFESOR ?>
+
+                        <?php elseif ($rol == 2): // PROFESOR 
+                        ?>
                             <li class="nav-item">
                                 <a class="nav-link text-warning fw-bold" href="<?= RUTA_VISTAS ?>profesor/panel.php">Panel de Profesor</a>
                             </li>
-                        
-                        <?php elseif ($rol == 3): // ADMINISTRADOR ?>
+
+                        <?php elseif ($rol == 3): // ADMINISTRADOR 
+                        ?>
                             <li class="nav-item">
                                 <a class="nav-link text-info fw-bold" href="<?= RUTA_VISTAS ?>admin/panel.php">Panel de Control</a>
                             </li>
