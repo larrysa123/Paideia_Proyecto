@@ -4,6 +4,11 @@
 :root {
     --color-primary: #2C5282;   /* Azul Egeo */
     --color-secondary: #D69E2E; /* Dorado Atenea */
+    
+    /* ¡LA MAGIA! Obligamos a Bootstrap a usar tu Azul Egeo por defecto */
+    --bs-primary: #2C5282;
+    --bs-primary-rgb: 44, 82, 130;
+
     --font-heading: 'Cinzel', serif;
     --font-body: 'Roboto', sans-serif;
 }
@@ -26,25 +31,70 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     background-color: var(--color-primary) !important;
 }
 
-/* Botones */
+.navbar-brand {
+    color: white !important;
+}
+
+.navbar-brand:hover {
+    color: var(--color-secondary) !important;
+}
+
+.navbar .btn-outline-light:hover {
+    background-color: #D69E2E;
+    color: var(--color-primary) !important; 
+    border-color: white;
+}
+
+/* 1. Obligamos a cualquier botón de Bootstrap a usar tu Azul Egeo */
+.btn-primary {
+    --bs-btn-bg: var(--color-primary) !important;
+    --bs-btn-border-color: var(--color-primary) !important;
+    
+    /* Hacemos que el Hover sea un azul bonito, no casi negro */
+    --bs-btn-hover-bg: #22426A !important; 
+    --bs-btn-hover-border-color: #22426A !important;
+    --bs-btn-active-bg: #1A365D !important;
+    --bs-btn-active-border-color: #1A365D !important;
+}
+
+/* 2. Ajustamos tu botón personalizado por si la ilusión óptica lo hace ver muy oscuro */
 .btn-paideia {
     background-color: var(--color-primary);
     color: white;
-    font-family: var(--font-heading);
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-weight: 500;
+    border-radius: 6px;
     border: none;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    /* Le metemos un brillito sutil (sombra) para que parezca más luminoso */
+    box-shadow: 0 2px 4px rgba(44, 82, 130, 0.2); 
 }
 
 .btn-paideia:hover {
-    background-color: #1A365D; /* Azul más oscuro */
+    background-color: #22426A; /* Azul egeo a penas un 10% más oscuro, no tan basto */
     color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(44, 82, 130, 0.3);
+}
+
+/* Botón de Peligro (Eliminar) */
+.btn-paideia-danger {
+    background-color: #CB4141; /* Rojo elegante */
+    color: white;
+    border-radius: 6px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-paideia-danger:hover {
+    background-color: #BA2D2D;
+    color: white;
+    transform: translateY(-1px);
 }
 
 /* Tarjetas (Cards) */
 .card {
     border: none;
+    border-radius: 8px; /* Borde redondeado global para las tarjetas */
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -53,13 +103,6 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     transform: translateY(-5px);
     box-shadow: 0 10px 15px rgba(0,0,0,0.1);
     border-bottom: 3px solid var(--color-secondary);
-}
-
-.precio-texto {
-    color: var(--color-secondary);
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 1.4rem;
 }
 
 /* Estilos específicos para formularios (Registro/Login) */
@@ -71,24 +114,115 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     border-top: 5px solid var(--color-primary);
 }
 
-/* --- CORRECCIONES NAVBAR --- */
+/* Caja de información centrada */
+.inf {
+    margin: 0 auto;
+    font-size: 12px;
+    background-color: #f0f6fc;
+    border-radius: 12px;
+    padding: 20px;
+    color: #3b4252;
+    font-family: sans-serif;
+    line-height: 1.6;
+    max-width: fit-content;
+}
+.inf p { margin-top: -3px; margin-bottom: -3px; }
+.inf h4 { font-size: 17px; }
 
-/* 1. Arreglo del Logo PAIDEIA */
-/* Lo forzamos a blanco siempre, ya que el fondo es azul oscuro */
-.navbar-brand {
-    color: white !important;
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS DEL PANEL (NUEVO)
+   ========================================================================== */
+
+/* Título principal del panel */
+.titulo-panel {
+    font-family: var(--font-body);
+    font-weight: 400;
 }
 
-/* Opcional: Que se ponga dorado al pasar el ratón */
-.navbar-brand:hover {
-    color: var(--color-secondary) !important;
+/* Pestañas (Tabs) personalizadas con el color Egeo */
+#panel-tabs .nav-link {
+    color: #6c757d; /* Gris para pestañas inactivas */
+}
+#panel-tabs .nav-link.active {
+    color: var(--color-primary) !important;
+    font-weight: bold;
+    border-bottom-color: var(--color-primary);
 }
 
-/* 2. Arreglo del Botón "Acceder" (Outline Light) */
-/* Cuando pasamos el ratón (:hover), el fondo se vuelve blanco,
-   así que obligamos al texto a ponerse AZUL para que se lea. */
-.navbar .btn-outline-light:hover {
-    background-color: #D69E2E;
-    color: var(--color-primary) !important; 
-    border-color: white;
+/* Textos dentro de las tarjetas del panel */
+.card-title-panel {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.card-desc-panel {
+    font-size: 0.9rem;
+}
+
+.precio-texto {
+    color: var(--color-primary); /* Pasado al azul egeo para más profesionalidad */
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.curso-meta {
+    font-size: 0.85rem;
+    color: #6c757d; /* text-muted */
+}
+
+/* ==========================================================================
+   ESTILOS DEL FORMULARIO DE CREACIÓN DE CURSOS
+   ========================================================================== */
+
+/* Botón de Volver al Panel */
+.btn-volver {
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+.btn-volver:hover {
+    color: var(--color-secondary);
+}
+
+/* Título principal del formulario */
+.titulo-form-paideia {
+    color: var(--color-primary);
+    font-weight: bold;
+    font-family: var(--font-body);
+}
+
+/* Etiquetas de los inputs (Labels) */
+.form-label-paideia {
+    font-family: var(--font-body);
+    font-weight: bold;
+    color: #333333;
+}
+
+/* Texto de ayuda debajo de los inputs */
+.form-text-paideia {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* Botón Oscuro Personalizado (Para el Temario) */
+.btn-paideia-dark {
+    background-color: #2D3748; /* Gris azulado elegante */
+    color: white;
+    border-radius: 6px;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(45, 55, 72, 0.2); 
+}
+
+.btn-paideia-dark:hover {
+    background-color: #1A202C; /* Más oscuro al pasar el ratón */
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(26, 32, 44, 0.3);
 }
