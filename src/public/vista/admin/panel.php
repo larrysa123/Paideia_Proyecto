@@ -1,65 +1,78 @@
 <?php
-// 1. Conectamos con el cerebro de la app (3 saltos hacia atrás)
 require_once __DIR__ . '/../../../app/config/config.php';
 
-// =====================================================================
-// 2. EL CERROJO DE MÁXIMA SEGURIDAD (Solo Administradores)
-// =====================================================================
-// Si no estás logueado, O si tu rol NO es el 3 (Admin)... ¡A la calle!
+// CERROJO VIP (Solo Administradores - Rol 3)
 if (!isset($_SESSION['user']) || $_SESSION['user']['id_rol'] != 3) {
     header("Location: " . RUTA_INICIO);
-    exit(); // Cortamos la ejecución al instante
+    exit();
 }
 
-// =====================================================================
-// 3. EL CONTENIDO DEL PANEL
-// =====================================================================
-// Cargamos el header (subimos un nivel a "vista" y entramos a "includes")
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="container mt-5">
-    <div class="text-center mb-5">
-        <h1 class="fw-bold" style="color: var(--color-primary);">Panel de Control General</h1>
-        <p class="text-muted" style="font-size: 1.1rem;">
-            Bienvenido, Administrador <strong><?= $_SESSION['user']['nombre'] ?></strong>.
-        </p>
-    </div>
+<div class="container mt-5 mb-5">
+    <h5 class="mb-4 text-dark titulo-panel">
+        <i class="bi bi-shield-lock-fill text-paideia me-2"></i> Panel de Control (Administrador)
+    </h5>
 
-    <div class="row g-4 mt-3">
+    <ul class="nav nav-underline mb-4 border-bottom" id="admin-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios" type="button" role="tab">
+                <i class="bi bi-people me-2"></i>Usuarios (<span id="count-usuarios">0</span>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cursos-tab" data-bs-toggle="tab" data-bs-target="#cursos" type="button" role="tab">
+                <i class="bi bi-journal-album me-2"></i>Cursos Globales (<span id="count-cursos">0</span>)
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="admin-tabsContent">
         
-        <div class="col-md-4">
-            <div class="card h-100 text-center p-4">
-                <h3 class="card-title">Usuarios</h3>
-                <p class="card-text mb-4">Gestiona alumnos, profesores y administradores de la plataforma.</p>
-                <div class="mt-auto">
-                    <a href="#" class="btn btn-paideia w-100">Ver Usuarios</a>
-                </div>
+        <div class="tab-pane fade show active" id="usuarios" role="tabpanel" tabindex="0">
+            <div class="table-responsive bg-white shadow-sm rounded-3 p-3 border-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-muted small">ID</th>
+                            <th class="text-muted small">Nombre Completo</th>
+                            <th class="text-muted small">Email</th>
+                            <th class="text-muted small">Rol</th>
+                            <th class="text-muted small text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-usuarios">
+                        <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card h-100 text-center p-4">
-                <h3 class="card-title">Todos los Cursos</h3>
-                <p class="card-text mb-4">Supervisa, edita o elimina cualquier curso creado por los profesores.</p>
-                <div class="mt-auto">
-                    <a href="#" class="btn btn-paideia w-100">Ver Cursos</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100 text-center p-4">
-                <h3 class="card-title">Ajustes</h3>
-                <p class="card-text mb-4">Configuración general de la plataforma Paideia.</p>
-                <div class="mt-auto">
-                    <a href="#" class="btn btn-paideia w-100">Ir a Ajustes</a>
-                </div>
+        <div class="tab-pane fade" id="cursos" role="tabpanel" tabindex="0">
+            <div class="table-responsive bg-white shadow-sm rounded-3 p-3 border-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-muted small">ID</th>
+                            <th class="text-muted small">Título del Curso</th>
+                            <th class="text-muted small">Profesor</th>
+                            <th class="text-muted small">Estado</th>
+                            <th class="text-muted small text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-cursos">
+                        <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<?= RUTA_JS ?>admin_panel.js"></script>
 
 <?php 
 // require_once __DIR__ . '/../includes/footer.php'; 
