@@ -1,23 +1,35 @@
 <?php
-// db.php - Archivo de conexión a la base de datos
-$host = 'localhost';
-$db   = 'paideia_db';
-$user = 'root';        // Usuario por defecto en XAMPP
-$pass = '';            // Contraseña por defecto en XAMPP (vacía)
-$charset = 'utf8mb4';
+// db.php - Archivo de conexión a la base de datos (Versión MVC Mejorada)
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
+class Conexion {
+    private static $host = 'localhost';
+    private static $db_name = 'paideia_db'; // Tu base de datos
+    private static $username = 'root';
+    private static $password = '';
+    private static $charset = 'utf8mb4';
+    private static $conn;
 
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-    // Si llegas aquí, la conexión funciona en silencio.
-} catch (\PDOException $e) {
-    // Si falla, te dirá por qué (solo para desarrollo)
-    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+    public static function conectar() {
+        // Si la conexión ya existe, no la volvemos a crear (Patrón Singleton)
+        if (self::$conn == null) {
+            try {
+                $dsn = "mysql:host=" . self::$host . ";dbname=" . self::$db_name . ";charset=" . self::$charset;
+                
+                // ¡Tus opciones pro integradas!
+                $options = [
+                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES   => false,
+                ];
+                
+                self::$conn = new PDO($dsn, self::$username, self::$password, $options);
+                
+            } catch(PDOException $e) {
+                // Frenamos la ejecución y mostramos el error si algo falla
+                die("Error de conexión a la base de datos: " . $e->getMessage());
+            }
+        }
+        return self::$conn;
+    }
 }
 ?>

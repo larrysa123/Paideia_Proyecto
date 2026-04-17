@@ -1,30 +1,40 @@
 <?php
-// src/api/cursos.php
+require_once '../config/config.php';
+header('Content-Type: application/json');
 
-// 1. Cabeceras: Le decimos al navegador que vamos a enviar JSON y permitimos acceso desde fuera (CORS)
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
+$metodo = $_SERVER['REQUEST_METHOD'];
+$controlador = new CursoController();
+if ($metodo === 'GET') {
+    if (isset($_GET['id'])) {
+        // Precarga para EDITAR (Privado - Pide sesión)
+        echo json_encode($controlador->mostrarCurso($_GET['id']));
+    } elseif (isset($_GET['id_publico'])) {
+        // NUEVO: Detalle para ALUMNOS (Público - Sin sesión)
+        echo json_encode($controlador->mostrarDetallePublico($_GET['id_publico']));
+    } elseif (isset($_GET['mis_cursos'])) {
+        // Panel del profesor
+        echo json_encode($controlador->mostrarPanelProfesor());
+    } else {
+        // Catálogo general (index.php)
+        echo json_encode($controlador->mostrarCatalogo());
+    }
+    // ... resto del archivo (POST, PUT, DELETE)
 
-// 2. Incluimos la conexión a la base de datos
-include_once 'config/db.php';
-
-try {
-    // 3. Preparamos la consulta SQL
-    // Solo queremos los cursos que estén 'publicado'
-    $query = "SELECT * FROM Curso WHERE estado = 'publicado'";
-    $stmt = $pdo->prepare($query);
-    
-    // 4. Ejecutamos la consulta
-    $stmt->execute();
-    
-    // 5. Obtenemos los resultados y contamos cuántos hay
-    $cursos = $stmt->fetchAll(PDO::FETCH_ASSOC); // FETCH_ASSOC quita índices numéricos duplicados
-
-    // 6. Devolvemos la respuesta en formato JSON
-    echo json_encode($cursos);
-
-} catch (PDOException $e) {
-    // Si hay error, devolvemos un JSON con el mensaje
-    echo json_encode(["error" => "Error al obtener cursos: " . $e->getMessage()]);
+} elseif ($metodo === 'POST') {
+    // Crear curso nuevo
+    $datos = json_decode(file_get_contents('php://input'), true);
+    echo json_encode($controlador->procesarCreacion($datos));
+} elseif ($metodo === 'PUT') {
+    // NUEVO: Actualizar curso existente
+    $datos = json_decode(file_get_contents('php://input'), true);
+    echo json_encode($controlador->procesarEdicion($datos));
+} elseif ($metodo === 'DELETE') {
+    // Eliminar curso
+    if (isset($_GET['id'])) {
+        echo json_encode($controlador->procesarEliminacion($_GET['id']));
+    } else {
+        echo json_encode(["status" => "error", "mensaje" => "Falta el ID"]);
+    }
+} else {
+    echo json_encode(["status" => "error", "mensaje" => "Método no permitido"]);
 }
-?>
