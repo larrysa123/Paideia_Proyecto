@@ -27,7 +27,7 @@ class AdminController
             ]
         ];
     }
-    // NUEVO: Procesar borrado
+    // Procesar borrado
     public function procesarEliminacion($tipo, $id)
     {
         if (!$this->verificarPermisos()) {
