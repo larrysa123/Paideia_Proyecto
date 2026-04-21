@@ -19,11 +19,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (resultado.status === 'success' && resultado.data.length > 0) {
             const videos = resultado.data;
-            
-            document.getElementById('titulo-curso-clase').innerText = "Reproduciendo lecciones...";
 
             videos.forEach((video, index) => {
-                // 3. Truco: Convertir URL normal de YouTube a URL "Embed" para iframes
                 let urlEmbed = video.url_youtube;
                 if (urlEmbed.includes('watch?v=')) {
                     urlEmbed = urlEmbed.replace('watch?v=', 'embed/');
@@ -31,8 +28,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     urlEmbed = urlEmbed.replace('youtu.be/', 'youtube.com/embed/');
                 }
 
-                // 4. Marcamos la primera lección visualmente como "activa" por defecto
-                // Usamos un fondo claro y un borde grueso azul (border-primary) a la izquierda
                 const claseActivo = index === 0 ? 'bg-light border-start border-primary border-4 fw-bold' : 'boton-leccion-light border-start border-transparent border-4';
                 
                 listaLecciones.innerHTML += `
@@ -43,7 +38,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     </button>
                 `;
 
-                // 5. Autoplay: Cargamos el primer vídeo en el reproductor automáticamente
                 if (index === 0) {
                     document.getElementById('reproductor-youtube').src = urlEmbed;
                     document.getElementById('titulo-leccion-actual').innerText = video.titulo;
@@ -52,7 +46,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
 
         } else {
-            // Si el curso no tiene vídeos todavía
+            // 3. Si no hay vídeos, avisamos en el centro
+            document.getElementById('titulo-leccion-actual').innerText = "No hay lecciones disponibles";
+            document.getElementById('desc-leccion-actual').innerText = "Vuelve más tarde cuando el profesor añada el temario.";
+
             listaLecciones.innerHTML = `
                 <div class="text-center text-muted p-4">
                     <i class="bi bi-camera-video-off fs-1 d-block mb-3"></i>
@@ -67,20 +64,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-// Función para cambiar de vídeo cuando el alumno hace clic en el temario
 function cambiarVideo(urlEmbed, titulo, boton) {
-    // 1. Cambiamos el vídeo y el título principal
     document.getElementById('reproductor-youtube').src = urlEmbed;
     document.getElementById('titulo-leccion-actual').innerText = titulo;
 
-    // 2. Quitamos el diseño de "activo" a todos los botones
     const botones = document.querySelectorAll('.boton-leccion');
     botones.forEach(btn => {
-        btn.classList.remove('bg-light', 'border-primary', 'fw-bold');
+        btn.classList.remove('bg-light', 'border-primary', 'fw-bold');A
         btn.classList.add('boton-leccion-light', 'border-transparent');
     });
 
-    // 3. Le ponemos el diseño de "activo" solo al botón que acabamos de pulsar
     boton.classList.remove('boton-leccion-light', 'border-transparent');
     boton.classList.add('bg-light', 'border-primary', 'fw-bold');
 }

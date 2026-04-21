@@ -25,7 +25,6 @@ require_once __DIR__ . '/../includes/header.php';
             <a href="mis_cursos.php" class="btn btn-outline-primary btn-sm">
                 <i class="bi bi-arrow-left"></i> Volver a Mis Cursos
             </a>
-            <h4 id="titulo-curso-clase" class="mb-0 fw-bold titulo-curso-reproductor">Cargando curso...</h4>
         </div>
 
         <div class="row g-4">
@@ -48,7 +47,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                         
                         <div id="lista-lecciones" class="list-group list-group-flush rounded-bottom">
-                        </div>
+                            </div>
                     </div>
                 </div>
             </div>
