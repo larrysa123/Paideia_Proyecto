@@ -276,3 +276,13 @@ h6,
 .boton-leccion-light:hover {
     background-color: #f8fafc;
 }
+
+#estrellas-curso i {
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-right: 2px;
+}
+
+#estrellas-curso i:hover {
+    transform: scale(1.2);
+}

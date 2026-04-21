@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     const idCurso = document.getElementById('id_curso_oculto').value;
 
     if (!idCurso) {
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
 
                 const claseActivo = index === 0 ? 'bg-light border-start border-primary border-4 fw-bold' : 'boton-leccion-light border-start border-transparent border-4';
-                
+
                 listaLecciones.innerHTML += `
                     <button onclick="cambiarVideo('${urlEmbed}', '${video.titulo.replace(/'/g, "\\'")}', this)" 
                             class="list-group-item list-group-item-action text-dark py-3 boton-leccion ${claseActivo}">
@@ -70,10 +70,51 @@ function cambiarVideo(urlEmbed, titulo, boton) {
 
     const botones = document.querySelectorAll('.boton-leccion');
     botones.forEach(btn => {
-        btn.classList.remove('bg-light', 'border-primary', 'fw-bold');A
+        btn.classList.remove('bg-light', 'border-primary', 'fw-bold'); A
         btn.classList.add('boton-leccion-light', 'border-transparent');
     });
 
     boton.classList.remove('boton-leccion-light', 'border-transparent');
     boton.classList.add('bg-light', 'border-primary', 'fw-bold');
 }
+
+
+// --- Lógica de Valoración de Estrellas ---
+document.addEventListener('click', async function (e) {
+    if (e.target.closest('#estrellas-curso i')) {
+        const estrella = e.target;
+        const puntuacion = estrella.getAttribute('data-value');
+        const idCurso = document.getElementById('id_curso_oculto').value;
+
+        // 1. Pintar las estrellas visualmente
+        const todasLasEstrellas = document.querySelectorAll('#estrellas-curso i');
+        todasLasEstrellas.forEach((s, index) => {
+            if (index < puntuacion) {
+                s.classList.remove('bi-star');
+                s.classList.add('bi-star-fill');
+            } else {
+                s.classList.remove('bi-star-fill');
+                s.classList.add('bi-star');
+            }
+        });
+
+        // 2. Enviar a la API
+        try {
+            const res = await fetch(BASE_URL + 'app/api/valoraciones.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_curso: idCurso, estrellas: puntuacion })
+            });
+            const data = await res.json();
+
+            const feedback = document.getElementById('feedback-valoracion');
+            if (data.status === 'success') {
+                feedback.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill"></i> ¡Voto guardado!</span>`;
+            } else {
+                feedback.innerText = "Error al guardar.";
+            }
+        } catch (error) {
+            console.error("Error al valorar:", error);
+        }
+    }
+});
