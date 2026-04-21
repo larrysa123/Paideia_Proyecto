@@ -60,6 +60,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 function irALeccion(id) {
-    // Aquí es donde mandaremos al alumno cuando pulse "Continuar" para ver los vídeos
-    alert("Próximamente: Redirigiendo a la sala de clases del curso " + id);
+    // Viajamos a la sala de clases real pasando el ID del curso en la URL
+    window.location.href = `clase.php?id=${id}`;
 }

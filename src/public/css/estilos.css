@@ -2,10 +2,11 @@
 
 /* --- VARIABLES PAIDEIA --- */
 :root {
-    --color-primary: #2C5282;   /* Azul Egeo */
-    --color-secondary: #D69E2E; /* Dorado Atenea */
-    
-    /* ¡LA MAGIA! Obligamos a Bootstrap a usar tu Azul Egeo por defecto */
+    --color-primary: #2C5282;
+    /* Azul Egeo */
+    --color-secondary: #D69E2E;
+    /* Dorado Atenea */
+
     --bs-primary: #2C5282;
     --bs-primary-rgb: 44, 82, 130;
 
@@ -19,7 +20,13 @@ body {
 }
 
 /* --- TIPOGRAFÍA --- */
-h1, h2, h3, h4, h5, h6, .navbar-brand {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar-brand {
     font-family: var(--font-heading);
     color: var(--color-primary);
 }
@@ -41,23 +48,23 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 .navbar .btn-outline-light:hover {
     background-color: #D69E2E;
-    color: var(--color-primary) !important; 
+    color: var(--color-primary) !important;
     border-color: white;
 }
 
-/* 1. Obligamos a cualquier botón de Bootstrap a usar tu Azul Egeo */
+
 .btn-primary {
     --bs-btn-bg: var(--color-primary) !important;
     --bs-btn-border-color: var(--color-primary) !important;
-    
+
     /* Hacemos que el Hover sea un azul bonito, no casi negro */
-    --bs-btn-hover-bg: #22426A !important; 
+    --bs-btn-hover-bg: #22426A !important;
     --bs-btn-hover-border-color: #22426A !important;
     --bs-btn-active-bg: #1A365D !important;
     --bs-btn-active-border-color: #1A365D !important;
 }
 
-/* 2. Ajustamos tu botón personalizado por si la ilusión óptica lo hace ver muy oscuro */
+
 .btn-paideia {
     background-color: var(--color-primary);
     color: white;
@@ -65,12 +72,11 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     border-radius: 6px;
     border: none;
     transition: all 0.3s ease;
-    /* Le metemos un brillito sutil (sombra) para que parezca más luminoso */
-    box-shadow: 0 2px 4px rgba(44, 82, 130, 0.2); 
+    box-shadow: 0 2px 4px rgba(44, 82, 130, 0.2);
 }
 
 .btn-paideia:hover {
-    background-color: #22426A; /* Azul egeo a penas un 10% más oscuro, no tan basto */
+    background-color: #22426A;
     color: white;
     transform: translateY(-1px);
     box-shadow: 0 4px 6px rgba(44, 82, 130, 0.3);
@@ -78,7 +84,7 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 /* Botón de Peligro (Eliminar) */
 .btn-paideia-danger {
-    background-color: #CB4141; /* Rojo elegante */
+    background-color: #CB4141;
     color: white;
     border-radius: 6px;
     border: none;
@@ -94,14 +100,14 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 /* Tarjetas (Cards) */
 .card {
     border: none;
-    border-radius: 8px; /* Borde redondeado global para las tarjetas */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
     border-bottom: 3px solid var(--color-secondary);
 }
 
@@ -110,7 +116,7 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     background: white;
     padding: 40px;
     border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     border-top: 5px solid var(--color-primary);
 }
 
@@ -126,8 +132,15 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     line-height: 1.6;
     max-width: fit-content;
 }
-.inf p { margin-top: -3px; margin-bottom: -3px; }
-.inf h4 { font-size: 17px; }
+
+.inf p {
+    margin-top: -3px;
+    margin-bottom: -3px;
+}
+
+.inf h4 {
+    font-size: 17px;
+}
 
 /* ==========================================================================
    ESTILOS ESPECÍFICOS DEL PANEL (NUEVO)
@@ -141,8 +154,10 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 /* Pestañas (Tabs) personalizadas con el color Egeo */
 #panel-tabs .nav-link {
-    color: #6c757d; /* Gris para pestañas inactivas */
+    color: #6c757d;
+    /* Gris para pestañas inactivas */
 }
+
 #panel-tabs .nav-link.active {
     color: var(--color-primary) !important;
     font-weight: bold;
@@ -161,14 +176,16 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 }
 
 .precio-texto {
-    color: var(--color-primary); /* Pasado al azul egeo para más profesionalidad */
+    color: var(--color-primary);
+    /* Pasado al azul egeo para más profesionalidad */
     font-weight: 600;
     font-size: 1.1rem;
 }
 
 .curso-meta {
     font-size: 0.85rem;
-    color: #6c757d; /* text-muted */
+    color: #6c757d;
+    /* text-muted */
 }
 
 /* ==========================================================================
@@ -212,17 +229,50 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 /* Botón Oscuro Personalizado (Para el Temario) */
 .btn-paideia-dark {
-    background-color: #2D3748; /* Gris azulado elegante */
+    background-color: #2D3748;
     color: white;
     border-radius: 6px;
     border: none;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(45, 55, 72, 0.2); 
+    box-shadow: 0 2px 4px rgba(45, 55, 72, 0.2);
 }
 
 .btn-paideia-dark:hover {
-    background-color: #1A202C; /* Más oscuro al pasar el ratón */
+    background-color: #1A202C;
+    /* Más oscuro al pasar el ratón */
     color: white;
     transform: translateY(-1px);
     box-shadow: 0 4px 6px rgba(26, 32, 44, 0.3);
+}
+
+
+/* ==========================================================================
+   ESTILOS DE LA SALA DE CLASES (REPRODUCTOR)
+   ========================================================================== */
+
+.pantalla-clase-contenedor {
+    min-height: calc(100vh - 70px);
+    background-color: #F7F9FC;
+    /* Fondo grisáceo suave igual que el panel */
+}
+
+.titulo-curso-reproductor {
+    /* Mantenemos el azul primario o el dorado según prefieras */
+    color: var(--color-primary);
+}
+
+.lista-lecciones-scroll {
+    max-height: 550px;
+    overflow-y: auto;
+}
+
+/* Estilo para los ítems de la lista cuando no estamos en modo oscuro */
+.boton-leccion-light {
+    border-bottom: 1px solid #eee !important;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.boton-leccion-light:hover {
+    background-color: #f8fafc;
 }
