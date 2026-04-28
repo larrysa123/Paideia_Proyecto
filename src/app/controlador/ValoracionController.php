@@ -1,36 +1,40 @@
 <?php
 class ValoracionController {
     
-    public function guardarValoracion($id_curso, $estrellas) {
-        // Solo los alumnos (rol 1) pueden valorar
+    public function procesarResena($id_curso, $estrellas, $texto) {
         if (!isset($_SESSION['user']) || $_SESSION['user']['id_rol'] != 1) {
-            return ["status" => "error", "mensaje" => "No tienes permisos para valorar."];
-        }
-
-        if ($estrellas < 1 || $estrellas > 5) {
-            return ["status" => "error", "mensaje" => "Valoración no válida."];
+            return ["status" => "error", "mensaje" => "Solo los alumnos matriculados pueden valorar."];
         }
 
         $id_usuario = $_SESSION['user']['id_usuario'];
         $modelo = new Valoracion();
-        $exito = $modelo->guardarValoracion($id_curso, $id_usuario, $estrellas);
+
+        if (!$modelo->estaMatriculado($id_curso, $id_usuario)) {
+            return ["status" => "error", "mensaje" => "No puedes valorar un curso en el que no estás matriculado."];
+        }
+
+        // Solo validamos las estrellas. El texto es libre (puede venir vacío).
+        if ($estrellas < 1 || $estrellas > 5) {
+            return ["status" => "error", "mensaje" => "Puntuación no válida."];
+        }
+
+        $exito = $modelo->guardarResenaCompleta($id_curso, $id_usuario, $estrellas, $texto);
 
         if ($exito) {
-            // Devolvemos la nueva media para que el JS actualice la pantalla sin recargar
             $nuevaMedia = $modelo->obtenerMediaCurso($id_curso);
-            return ["status" => "success", "mensaje" => "¡Gracias por tu valoración!", "data" => $nuevaMedia];
+            return ["status" => "success", "mensaje" => "¡Valoración guardada con éxito!", "data" => $nuevaMedia];
         } else {
-            return ["status" => "error", "mensaje" => "Error al guardar en la base de datos."];
+            return ["status" => "error", "mensaje" => "Hubo un error al guardar tu opinión."];
         }
     }
 
-    public function obtenerMiValoracion($id_curso) {
+    public function cargarMiResena($id_curso) {
         if (!isset($_SESSION['user'])) return ["status" => "error"];
         
         $modelo = new Valoracion();
-        $voto = $modelo->obtenerValoracionAlumno($id_curso, $_SESSION['user']['id_usuario']);
+        $datos = $modelo->obtenerResenaAlumno($id_curso, $_SESSION['user']['id_usuario']);
         
-        return ["status" => "success", "data" => $voto];
+        return ["status" => "success", "data" => $datos];
     }
 }
 ?>

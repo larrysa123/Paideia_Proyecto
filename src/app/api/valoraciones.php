@@ -6,19 +6,19 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 $controlador = new ValoracionController();
 
 if ($metodo === 'POST') {
-    // Cuando el JS envíe las estrellas
     $data = json_decode(file_get_contents("php://input"), true);
     
+    // El texto ahora es opcional, así que comprobamos si existe. Si no, mandamos string vacío.
     if (isset($data['id_curso']) && isset($data['estrellas'])) {
-        echo json_encode($controlador->guardarValoracion($data['id_curso'], $data['estrellas']));
+        $texto = isset($data['texto']) ? $data['texto'] : '';
+        echo json_encode($controlador->procesarResena($data['id_curso'], $data['estrellas'], $texto));
     } else {
-        echo json_encode(["status" => "error", "mensaje" => "Faltan datos."]);
+        echo json_encode(["status" => "error", "mensaje" => "Faltan datos obligatorios (curso o estrellas)."]);
     }
 
 } elseif ($metodo === 'GET') {
-    // Cuando el JS pregunte: "¿Cuántas estrellas le di yo a este curso?" al cargar la página
-    if (isset($_GET['id_curso']) && isset($_GET['accion']) && $_GET['accion'] == 'mivoto') {
-        echo json_encode($controlador->obtenerMiValoracion($_GET['id_curso']));
+    if (isset($_GET['id_curso']) && isset($_GET['accion']) && $_GET['accion'] == 'miresena') {
+        echo json_encode($controlador->cargarMiResena($_GET['id_curso']));
     } else {
         echo json_encode(["status" => "error", "mensaje" => "Petición no válida."]);
     }
