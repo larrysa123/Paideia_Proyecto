@@ -8,33 +8,25 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     try {
-        // 1. Pedimos los vídeos a nuestra API
         const respuesta = await fetch(BASE_URL + 'app/api/videos.php?id_curso=' + idCurso);
         const resultado = await respuesta.json();
 
-        // 2. Ocultamos el spinner de carga
         document.getElementById('cargando-temario').classList.add('d-none');
-
         const listaLecciones = document.getElementById('lista-lecciones');
 
         if (resultado.status === 'success' && resultado.data.length > 0) {
             const videos = resultado.data;
-
             videos.forEach((video, index) => {
                 let urlEmbed = video.url_youtube;
-                if (urlEmbed.includes('watch?v=')) {
-                    urlEmbed = urlEmbed.replace('watch?v=', 'embed/');
-                } else if (urlEmbed.includes('youtu.be/')) {
-                    urlEmbed = urlEmbed.replace('youtu.be/', 'youtube.com/embed/');
-                }
+                if (urlEmbed.includes('watch?v=')) urlEmbed = urlEmbed.replace('watch?v=', 'embed/');
+                else if (urlEmbed.includes('youtu.be/')) urlEmbed = urlEmbed.replace('youtu.be/', 'youtube.com/embed/');
 
                 const claseActivo = index === 0 ? 'bg-light border-start border-primary border-4 fw-bold' : 'boton-leccion-light border-start border-transparent border-4';
 
                 listaLecciones.innerHTML += `
                     <button onclick="cambiarVideo('${urlEmbed}', '${video.titulo.replace(/'/g, "\\'")}', this)" 
                             class="list-group-item list-group-item-action text-dark py-3 boton-leccion ${claseActivo}">
-                        <span class="badge bg-paideia me-2">${video.orden}</span> 
-                        ${video.titulo}
+                        <span class="badge bg-paideia me-2">${video.orden}</span> ${video.titulo}
                     </button>
                 `;
 
@@ -44,77 +36,107 @@ document.addEventListener('DOMContentLoaded', async function () {
                     document.getElementById('desc-leccion-actual').innerText = video.descripcion || "Sin descripción adicional.";
                 }
             });
-
         } else {
-            // 3. Si no hay vídeos, avisamos en el centro
             document.getElementById('titulo-leccion-actual').innerText = "No hay lecciones disponibles";
             document.getElementById('desc-leccion-actual').innerText = "Vuelve más tarde cuando el profesor añada el temario.";
-
-            listaLecciones.innerHTML = `
-                <div class="text-center text-muted p-4">
-                    <i class="bi bi-camera-video-off fs-1 d-block mb-3"></i>
-                    <p>El profesor aún no ha subido vídeos a este curso.</p>
-                </div>
-            `;
+            listaLecciones.innerHTML = `<div class="text-center text-muted p-4"><i class="bi bi-camera-video-off fs-1 d-block mb-3"></i><p>Sin vídeos.</p></div>`;
         }
-
     } catch (error) {
-        console.error("Error al cargar la clase:", error);
         document.getElementById('cargando-temario').innerHTML = '<div class="alert alert-danger m-3">Error de conexión con el servidor.</div>';
+    }
+
+    // --- Lógica del Modal de Valoración ---
+    const modalValoracion = document.getElementById('modalValoracion');
+    const contenedorEstrellas = document.getElementById('modal-estrellas-curso');
+    const textoComentario = document.getElementById('modal-texto-curso');
+    const btnGuardar = document.getElementById('btn-guardar-resena');
+    const feedback = document.getElementById('modal-feedback');
+
+    function pintarEstrellas(puntuacion) {
+        const iconos = contenedorEstrellas.querySelectorAll('i');
+        iconos.forEach((icono, index) => {
+            if (index < puntuacion) {
+                icono.classList.remove('bi-star');
+                icono.classList.add('bi-star-fill');
+            } else {
+                icono.classList.remove('bi-star-fill');
+                icono.classList.add('bi-star');
+            }
+        });
+    }
+
+    if (modalValoracion) {
+        modalValoracion.addEventListener('show.bs.modal', async function () {
+            feedback.innerHTML = ''; 
+            try {
+                const res = await fetch(BASE_URL + 'app/api/valoraciones.php?id_curso=' + idCurso + '&accion=miresena');
+                const json = await res.json();
+                if (json.status === 'success' && json.data) {
+                    textoComentario.value = json.data.texto || '';
+                    const estrellasPrevias = json.data.estrellas || 0;
+                    contenedorEstrellas.setAttribute('data-puntuacion', estrellasPrevias);
+                    pintarEstrellas(estrellasPrevias);
+                }
+            } catch (error) {}
+        });
+    }
+
+    if (contenedorEstrellas) {
+        contenedorEstrellas.addEventListener('click', function(e) {
+            if (e.target.tagName === 'I') {
+                const puntuacion = e.target.getAttribute('data-value');
+                contenedorEstrellas.setAttribute('data-puntuacion', puntuacion);
+                pintarEstrellas(puntuacion);
+            }
+        });
+    }
+
+    if (btnGuardar) {
+        btnGuardar.addEventListener('click', async function() {
+            const puntuacion = contenedorEstrellas.getAttribute('data-puntuacion');
+            const texto = textoComentario.value.trim();
+
+            if (puntuacion == 0) {
+                feedback.innerText = "Por favor, selecciona al menos una estrella.";
+                return;
+            }
+            // ¡Ya no bloqueamos si el texto está vacío!
+
+            btnGuardar.disabled = true;
+            btnGuardar.innerText = "Guardando...";
+
+            try {
+                const res = await fetch(BASE_URL + 'app/api/valoraciones.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_curso: idCurso, estrellas: puntuacion, texto: texto })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    const modalInstance = bootstrap.Modal.getInstance(modalValoracion);
+                    modalInstance.hide();
+                    alert("¡Gracias por tu valoración!");
+                } else {
+                    feedback.innerText = data.mensaje;
+                }
+            } catch (error) {
+                feedback.innerText = "Error de conexión con el servidor.";
+            } finally {
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = "Guardar Valoración";
+            }
+        });
     }
 });
 
 function cambiarVideo(urlEmbed, titulo, boton) {
     document.getElementById('reproductor-youtube').src = urlEmbed;
     document.getElementById('titulo-leccion-actual').innerText = titulo;
-
     const botones = document.querySelectorAll('.boton-leccion');
     botones.forEach(btn => {
-        btn.classList.remove('bg-light', 'border-primary', 'fw-bold'); A
+        btn.classList.remove('bg-light', 'border-primary', 'fw-bold');
         btn.classList.add('boton-leccion-light', 'border-transparent');
     });
-
     boton.classList.remove('boton-leccion-light', 'border-transparent');
     boton.classList.add('bg-light', 'border-primary', 'fw-bold');
 }
-
-
-// --- Lógica de Valoración de Estrellas ---
-document.addEventListener('click', async function (e) {
-    if (e.target.closest('#estrellas-curso i')) {
-        const estrella = e.target;
-        const puntuacion = estrella.getAttribute('data-value');
-        const idCurso = document.getElementById('id_curso_oculto').value;
-
-        // 1. Pintar las estrellas visualmente
-        const todasLasEstrellas = document.querySelectorAll('#estrellas-curso i');
-        todasLasEstrellas.forEach((s, index) => {
-            if (index < puntuacion) {
-                s.classList.remove('bi-star');
-                s.classList.add('bi-star-fill');
-            } else {
-                s.classList.remove('bi-star-fill');
-                s.classList.add('bi-star');
-            }
-        });
-
-        // 2. Enviar a la API
-        try {
-            const res = await fetch(BASE_URL + 'app/api/valoraciones.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_curso: idCurso, estrellas: puntuacion })
-            });
-            const data = await res.json();
-
-            const feedback = document.getElementById('feedback-valoracion');
-            if (data.status === 'success') {
-                feedback.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill"></i> ¡Voto guardado!</span>`;
-            } else {
-                feedback.innerText = "Error al guardar.";
-            }
-        } catch (error) {
-            console.error("Error al valorar:", error);
-        }
-    }
-});

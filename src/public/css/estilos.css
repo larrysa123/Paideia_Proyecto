@@ -286,3 +286,16 @@ h6,
 #estrellas-curso i:hover {
     transform: scale(1.2);
 }
+
+/* ==========================================================================
+   ESTILOS VENTANA MODAL (RESEÑA)
+   ========================================================================== */
+#modal-estrellas-curso i {
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-right: 4px;
+}
+
+#modal-estrellas-curso i:hover {
+    transform: scale(1.2);
+}
