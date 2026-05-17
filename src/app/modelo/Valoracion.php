@@ -1,36 +1,41 @@
 <?php
-class Valoracion {
+class Valoracion
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Conexion::conectar();
     }
 
-    // A. SEGURIDAD: Comprobar si está matriculado
-    public function estaMatriculado($id_curso, $id_usuario) {
+    public function estaMatriculado($id_curso, $id_usuario)
+    {
         $query = "SELECT 1 FROM Inscripcion WHERE id_curso = ? AND id_usuario = ?";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$id_curso, $id_usuario]);
         return $stmt->fetch() !== false;
     }
 
-    // B. Obtener nota media
-    public function obtenerMediaCurso($id_curso) {
-        $query = "SELECT AVG(estrellas) as media, COUNT(*) as total 
-                  FROM valoracion_curso 
-                  WHERE id_curso = ?";
+    // AHORA LEE LA COLUMNA valoracion_media DE LA TABLA CURSO
+    public function obtenerMediaCurso($id_curso)
+    {
+        $query = "SELECT c.valoracion_media as media, COUNT(v.estrellas) as total 
+                  FROM Curso c
+                  LEFT JOIN valoracion_curso v ON c.id_curso = v.id_curso
+                  WHERE c.id_curso = ?
+                  GROUP BY c.id_curso";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$id_curso]);
         $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         return [
             'media' => $resultado['media'] ? round($resultado['media'], 1) : 0,
             'total' => $resultado['total']
         ];
     }
 
-    // C. Obtener reseña actual (Estrellas + Texto)
-    public function obtenerResenaAlumno($id_curso, $id_usuario) {
+    public function obtenerResenaAlumno($id_curso, $id_usuario)
+    {
         $q1 = "SELECT estrellas FROM valoracion_curso WHERE id_curso = ? AND id_usuario = ?";
         $st1 = $this->db->prepare($q1);
         $st1->execute([$id_curso, $id_usuario]);
@@ -47,21 +52,34 @@ class Valoracion {
         ];
     }
 
-    // D. GUARDAR (Texto Opcional)
-    public function guardarResenaCompleta($id_curso, $id_usuario, $estrellas, $texto) {
+    // --- NUEVO: FUNCIÓN QUE ACTUALIZA LA TABLA CURSO ---
+    private function actualizarMediaEnCurso($id_curso)
+    {
+        $query = "UPDATE Curso 
+                  SET valoracion_media = (
+                      SELECT COALESCE(ROUND(AVG(estrellas), 1), 0) 
+                      FROM valoracion_curso 
+                      WHERE id_curso = ?
+                  ) 
+                  WHERE id_curso = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$id_curso, $id_curso]);
+    }
+
+    public function guardarResenaCompleta($id_curso, $id_usuario, $estrellas, $texto)
+    {
         try {
             $this->db->beginTransaction();
 
-            // 1. Estrellas (Siempre se guardan)
+            // 1. Guardar Estrellas
             $qVoto = "INSERT INTO valoracion_curso (id_usuario, id_curso, estrellas) 
                       VALUES (?, ?, ?) 
                       ON DUPLICATE KEY UPDATE estrellas = ?, fecha = CURRENT_TIMESTAMP";
             $stVoto = $this->db->prepare($qVoto);
             $stVoto->execute([$id_usuario, $id_curso, $estrellas, $estrellas]);
 
-            // 2. Texto (Opcional)
+            // 2. Guardar Texto
             if (trim($texto) !== '') {
-                // Si hay texto, insertamos o actualizamos
                 $checkCom = "SELECT id_comentario FROM comentario_curso WHERE id_curso = ? AND id_usuario = ? AND id_padre IS NULL LIMIT 1";
                 $stCheck = $this->db->prepare($checkCom);
                 $stCheck->execute([$id_curso, $id_usuario]);
@@ -77,11 +95,13 @@ class Valoracion {
                     $stText->execute([$id_usuario, $id_curso, $texto]);
                 }
             } else {
-                // Si envía el texto vacío, borramos su comentario anterior si existía para no dejar basura
                 $qDel = "DELETE FROM comentario_curso WHERE id_curso = ? AND id_usuario = ? AND id_padre IS NULL";
                 $stDel = $this->db->prepare($qDel);
                 $stDel->execute([$id_curso, $id_usuario]);
             }
+
+            // 3. ACTUALIZAR LA COLUMNA valoracion_media ANTES DE CERRAR LA TRANSACCIÓN
+            $this->actualizarMediaEnCurso($id_curso);
 
             $this->db->commit();
             return true;
@@ -91,4 +111,3 @@ class Valoracion {
         }
     }
 }
-?>
