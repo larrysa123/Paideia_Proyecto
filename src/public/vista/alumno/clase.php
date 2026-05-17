@@ -22,7 +22,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <i class="bi bi-arrow-left"></i> Volver a Mis Cursos
             </a>
             <button type="button" class="btn btn-warning btn-sm fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalValoracion">
-                <i class="bi bi-star-fill text-dark"></i> Valorar Curso
+                <i class="bi bi-star-fill text-dark"></i> Valorar Curso Completo
             </button>
         </div>
 
@@ -33,6 +33,40 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <h3 id="titulo-leccion-actual" class="fw-bold mt-3 text-dark">Selecciona una lección</h3>
                 <p id="desc-leccion-actual" class="text-muted"></p>
+
+                <div class="card border-0 shadow-sm mb-4 bg-light d-none" id="bloque-estrellas-video">
+                    <div class="card-body d-flex align-items-center justify-content-between py-2">
+                        <div class="d-flex align-items-center">
+                            <span class="text-dark fw-bold me-3">¿Se entiende bien esta lección?</span>
+                            <div id="estrellas-video" class="fs-4 text-warning cursor-pointer" data-puntuacion="0">
+                                <i class="bi bi-star" data-value="1"></i>
+                                <i class="bi bi-star" data-value="2"></i>
+                                <i class="bi bi-star" data-value="3"></i>
+                                <i class="bi bi-star" data-value="4"></i>
+                                <i class="bi bi-star" data-value="5"></i>
+                            </div>
+                        </div>
+                        <div id="feedback-video" class="small text-muted fw-bold"></div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 mb-4 d-none" id="bloque-foro-video">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-chat-dots text-primary me-2"></i>Foro de Dudas: <span id="titulo-foro-actual" class="text-muted fs-6"></span></h5>
+                    </div>
+                    <div class="card-body bg-light">
+                        <div class="mb-4 bg-white p-3 rounded shadow-sm border">
+                            <textarea id="texto-nuevo-comentario" class="form-control border-0 mb-2" rows="2" placeholder="¿Tienes alguna duda sobre este vídeo? Escríbela aquí para que el profesor u otros alumnos te ayuden..."></textarea>
+                            <div class="text-end">
+                                <button id="btn-enviar-comentario" class="btn btn-paideia btn-sm">Publicar Duda</button>
+                            </div>
+                        </div>
+
+                        <div id="contenedor-comentarios">
+                            <div class="text-center text-muted py-3">Cargando foro...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col-lg-4">
@@ -85,4 +119,10 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <input type="hidden" id="id_curso_oculto" value="<?= htmlspecialchars($id_curso) ?>">
+<input type="hidden" id="id_video_actual" value="">
+
 <script src="<?= RUTA_JS ?>clase.js"></script>
+
+<?php
+// require_once __DIR__ . '/../includes/footer.php'; 
+?>
