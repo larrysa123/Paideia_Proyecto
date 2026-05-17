@@ -1,21 +1,24 @@
 document.addEventListener('DOMContentLoaded', function () {
     cargarMisCursos();
+    
+    // Escuchar cuando el profesor hace clic en la pestaña "Comentarios"
+    const tabComentarios = document.getElementById('comentarios-tab');
+    if (tabComentarios) {
+        tabComentarios.addEventListener('click', cargarComentariosProfesor);
+    }
 });
 
 async function cargarMisCursos() {
     const contenedor = document.getElementById('contenedor-mis-cursos');
-    const tabCursos = document.getElementById('cursos-tab'); // Para actualizar el contador (3)
+    const tabCursos = document.getElementById('cursos-tab'); 
 
     try {
-        // Llamamos a la API con el parámetro que creamos en el controlador
         const respuesta = await fetch(BASE_URL + 'app/api/cursos.php?mis_cursos=true');
         const resultado = await respuesta.json();
 
         if (resultado.status === 'success') {
             const cursos = resultado.data;
-            contenedor.innerHTML = ''; // Limpiamos el spinner
-
-            // Actualizamos el contador de la pestaña
+            contenedor.innerHTML = ''; 
             tabCursos.innerHTML = `<i class="bi bi-book me-2"></i>Mis Cursos (${cursos.length})`;
 
             cursos.forEach(curso => {
@@ -56,42 +59,125 @@ async function cargarMisCursos() {
             tabCursos.innerHTML = `<i class="bi bi-book me-2"></i>Mis Cursos (0)`;
         }
     } catch (error) {
-        console.error("Error cargando el panel:", error);
         contenedor.innerHTML = '<div class="alert alert-danger">Error al conectar con el servidor.</div>';
     }
 }
 
-// NUEVA FUNCIÓN: Redirige al gestor de vídeos
+// =======================================================
+// NUEVO: LÓGICA DE LA PESTAÑA COMENTARIOS
+// =======================================================
+async function cargarComentariosProfesor() {
+    const contenedor = document.getElementById('comentarios');
+    const tabComentarios = document.getElementById('comentarios-tab');
+    
+    contenedor.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+
+    try {
+        const respuesta = await fetch(BASE_URL + 'app/api/foro_video.php?accion=mis_comentarios_profesor');
+        const resultado = await respuesta.json();
+
+        if (resultado.status === 'success') {
+            const dudas = resultado.data;
+            tabComentarios.innerHTML = `<i class="bi bi-chat-left-text me-2"></i>Comentarios (${dudas.length})`;
+
+            if (dudas.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-chat-square-dots text-muted" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 text-muted">Bandeja limpia</h5>
+                        <p class="text-muted">No tienes dudas pendientes por responder.</p>
+                    </div>`;
+                return;
+            }
+
+            let htmlDudas = '<div class="row g-4 mt-1">';
+            dudas.forEach(duda => {
+                htmlDudas += `
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-person-circle text-primary me-2"></i>${duda.alumno_nombre} ${duda.alumno_apellidos}</h6>
+                                    <small class="text-muted">${duda.fecha}</small>
+                                </div>
+                                <div class="mb-3 small text-muted border-bottom pb-2">
+                                    <i class="bi bi-book me-1"></i> Curso: <strong>${duda.curso_titulo}</strong> <br>
+                                    <i class="bi bi-play-circle me-1"></i> Vídeo: <strong>${duda.video_titulo}</strong>
+                                </div>
+                                <p class="text-secondary">${duda.texto}</p>
+                                
+                                <div class="mt-3 bg-light p-3 rounded">
+                                    <label class="small fw-bold text-dark mb-1">Tu respuesta:</label>
+                                    <textarea id="respuesta-${duda.id_comentario}" class="form-control form-control-sm mb-2" rows="2" placeholder="Escribe tu respuesta como profesor..."></textarea>
+                                    <div class="text-end">
+                                        <button onclick="responderDuda(${duda.id_video}, ${duda.id_comentario})" class="btn btn-sm btn-paideia">
+                                            <i class="bi bi-send me-1"></i> Enviar Respuesta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            htmlDudas += '</div>';
+            contenedor.innerHTML = htmlDudas;
+        }
+    } catch (error) {
+        contenedor.innerHTML = '<div class="alert alert-danger mt-4">Error al cargar la bandeja de comentarios.</div>';
+    }
+}
+
+// Función que ejecuta el botón de enviar respuesta
+async function responderDuda(idVideo, idPadre) {
+    const textarea = document.getElementById(`respuesta-${idPadre}`);
+    const texto = textarea.value.trim();
+
+    if (!texto) {
+        alert("La respuesta no puede estar vacía.");
+        return;
+    }
+
+    try {
+        const res = await fetch(BASE_URL + 'app/api/foro_video.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_video: idVideo, texto: texto, id_padre: idPadre })
+        });
+        const data = await res.json();
+        
+        if (data.status === 'success') {
+            alert("Respuesta enviada con éxito.");
+            textarea.value = ''; 
+            // Opcional: Podríamos recargar la bandeja entera, o solo borrar el texto
+            cargarComentariosProfesor(); 
+        } else {
+            alert(data.mensaje);
+        }
+    } catch(err) {
+        alert("Error de conexión al enviar la respuesta.");
+    }
+}
+
+// =======================================================
+// FUNCIONES ANTIGUAS
+// =======================================================
 function gestionarTemario(id) {
-    // Viajamos a la nueva página pasándole el ID del curso
     window.location.href = `gestionar_videos.php?id=${id}`;
 }
 
-// Función para el botón de eliminar
 async function eliminarCurso(id) {
-    // 1. Pedimos confirmación para no borrar por accidente
     if (confirm('¿Estás seguro de que quieres eliminar este curso? Esta acción no se puede deshacer.')) {
-
         try {
-            // 2. Enviamos la petición DELETE a la API, pasando el ID en la URL
-            const respuesta = await fetch(BASE_URL + 'app/api/cursos.php?id=' + id, {
-                method: 'DELETE'
-            });
-
-            // 3. Leemos la respuesta del servidor
+            const respuesta = await fetch(BASE_URL + 'app/api/cursos.php?id=' + id, { method: 'DELETE' });
             const resultado = await respuesta.json();
-
             if (resultado.status === 'success') {
-                // Si ha ido bien, avisamos...
                 alert(resultado.mensaje);
-                // ...y volvemos a cargar las tarjetas para que el curso desaparezca de la pantalla al instante
                 cargarMisCursos();
             } else {
                 alert("Error: " + resultado.mensaje);
             }
-
         } catch (error) {
-            console.error("Error al eliminar:", error);
             alert("Hubo un error de conexión al intentar eliminar el curso.");
         }
     }

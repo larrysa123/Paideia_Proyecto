@@ -1,13 +1,16 @@
 <?php
-class ForoVideo {
+class ForoVideo
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Conexion::conectar();
     }
 
     // --- SECCIÓN: COMENTARIOS (FORO) ---
-    public function obtenerComentarios($id_video) {
+    public function obtenerComentarios($id_video)
+    {
         $query = "SELECT c.*, u.nombre, u.apellidos, u.foto, r.nombre_rol 
                   FROM Comentario_Video c
                   JOIN Usuario u ON c.id_usuario = u.id_usuario
@@ -40,7 +43,8 @@ class ForoVideo {
         return array_values($comentarios);
     }
 
-    public function publicarComentario($id_usuario, $id_video, $texto, $id_padre = null) {
+    public function publicarComentario($id_usuario, $id_video, $texto, $id_padre = null)
+    {
         try {
             $query = "INSERT INTO Comentario_Video (id_usuario, id_video, texto, id_padre, tipo) 
                       VALUES (?, ?, ?, ?, 'foro')";
@@ -52,7 +56,8 @@ class ForoVideo {
     }
 
     // --- SECCIÓN: VALORACIÓN DEL VÍDEO (ESTRELLAS) ---
-    public function obtenerMiValoracionVideo($id_video, $id_usuario) {
+    public function obtenerMiValoracionVideo($id_video, $id_usuario)
+    {
         $query = "SELECT estrellas FROM Valoracion_Video WHERE id_video = ? AND id_usuario = ?";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$id_video, $id_usuario]);
@@ -60,7 +65,8 @@ class ForoVideo {
         return $resultado ? $resultado['estrellas'] : 0;
     }
 
-    private function actualizarMediaEnVideo($id_video) {
+    private function actualizarMediaEnVideo($id_video)
+    {
         $query = "UPDATE Video 
                   SET valoracion_media = (
                       SELECT COALESCE(ROUND(AVG(estrellas), 1), 0) 
@@ -72,7 +78,8 @@ class ForoVideo {
         $stmt->execute([$id_video, $id_video]);
     }
 
-    public function valorarVideo($id_usuario, $id_video, $estrellas) {
+    public function valorarVideo($id_usuario, $id_video, $estrellas)
+    {
         try {
             $this->db->beginTransaction();
 
@@ -91,5 +98,22 @@ class ForoVideo {
             return false;
         }
     }
+
+    // --- NUEVA FUNCIÓN PARA EL PANEL DEL PROFESOR ---
+    public function obtenerComentariosPorProfesor($id_profesor)
+    {
+        // Buscamos solo los comentarios principales (id_padre IS NULL) de los cursos que le pertenecen
+        $query = "SELECT cv.id_comentario, cv.texto, cv.fecha, cv.id_video,
+                         u.nombre as alumno_nombre, u.apellidos as alumno_apellidos, 
+                         v.titulo as video_titulo, c.titulo as curso_titulo
+                  FROM Comentario_Video cv
+                  JOIN Usuario u ON cv.id_usuario = u.id_usuario
+                  JOIN Video v ON cv.id_video = v.id_video
+                  JOIN Curso c ON v.id_curso = c.id_curso
+                  WHERE c.id_profesor = ? AND cv.id_padre IS NULL
+                  ORDER BY cv.fecha DESC";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$id_profesor]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
-?>
