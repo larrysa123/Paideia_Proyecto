@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     const urlParams = new URLSearchParams(window.location.search);
     const idCurso = urlParams.get('id');
+    let precioCursoNum = 0; // Guardaremos el precio para pasarlo al backend
 
     if (!idCurso) {
         alert("Curso no especificado.");
@@ -20,52 +21,72 @@ document.addEventListener('DOMContentLoaded', async function() {
             const curso = resultado.data;
             const rutaImagen = curso.imagen ? `../../assets/img/cursos/${curso.imagen}` : 'https://via.placeholder.com/800x400?text=Paideia+Curso';
 
+            precioCursoNum = parseFloat(curso.precio); // Guardamos el valor numérico
+
             document.getElementById('det-imagen').src = rutaImagen;
             document.getElementById('det-titulo').innerText = curso.titulo;
             document.getElementById('det-descripcion').innerText = curso.descripcion || 'Este curso no tiene descripción detallada aún.';
             document.getElementById('det-precio').innerText = curso.precio + ' €';
             
+            // Actualizamos también el texto dentro del Modal de pago
+            document.getElementById('modal-precio-total').innerText = curso.precio + ' €';
+            
             document.getElementById('contenido-detalle').classList.remove('d-none');
         } else {
             document.getElementById('cargando-detalle').innerHTML = `<h3 class="text-danger">${resultado.mensaje}</h3>`;
             document.getElementById('cargando-detalle').classList.remove('d-none');
-            return; // Si no hay curso, paramos aquí
+            return;
         }
 
     } catch (error) {
         console.error("Error al cargar detalles:", error);
     }
 
-    // --- FASE 2: LÓGICA DEL BOTÓN INSCRIBIRSE ---
+    // --- FASE 2: ABRIR EL MODAL ---
     const btnInscribirse = document.getElementById('btn-inscribirse');
-    
-    // Si el botón existe en el HTML, le damos vida
+    let modalPagoInstance = null;
+
     if (btnInscribirse) {
-        btnInscribirse.addEventListener('click', async function() {
+        btnInscribirse.addEventListener('click', function() {
+            const modalEl = document.getElementById('modalPago');
+            modalPagoInstance = new bootstrap.Modal(modalEl);
+            modalPagoInstance.show();
+        });
+    }
+
+    // --- FASE 3: PROCESAR EL PAGO ---
+    const formPago = document.getElementById('form-pago');
+    
+    if (formPago) {
+        formPago.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Evitamos que la página se recargue
             
-            // Efecto visual de "Cargando..."
-            const textoOriginal = btnInscribirse.innerHTML;
-            btnInscribirse.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...';
-            btnInscribirse.disabled = true;
+            const btnProcesar = document.getElementById('btn-procesar-pago');
+            const textoOriginal = btnProcesar.innerHTML;
+            
+            // Animación de carga
+            btnProcesar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando pago...';
+            btnProcesar.disabled = true;
 
             try {
-                // Llamamos a la nueva API de inscripciones
-                const resInscripcion = await fetch(BASE_URL + 'app/api/inscripciones.php', {
+                // Llamamos a la API de PEDIDOS (La caja registradora)
+                const resPedido = await fetch(BASE_URL + 'app/api/pedidos.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id_curso: idCurso }) 
+                    body: JSON.stringify({ 
+                        id_curso: idCurso,
+                        precio: precioCursoNum 
+                    }) 
                 });
 
-                const final = await resInscripcion.json();
+                const final = await resPedido.json();
 
                 if (final.status === 'success') {
-                    // Si todo va bien, al panel del alumno
                     alert(final.mensaje);
                     window.location.href = '../alumno/mis_cursos.php'; 
                 } else {
-                    // Si hay error, leemos el código oculto para saber a dónde mandarlo
                     if (final.code === 'NO_LOGIN') {
-                        window.location.href = '../login.php'; // Ajusta la ruta si login.php está en otra carpeta
+                        window.location.href = '../login.php'; 
                     } else if (final.code === 'YA_INSCRITO') {
                         alert(final.mensaje);
                         window.location.href = '../alumno/mis_cursos.php';
@@ -74,12 +95,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                     }
                 }
             } catch (error) {
-                console.error("Error al inscribirse:", error);
-                alert("Error de conexión al procesar la matrícula.");
+                console.error("Error al pagar:", error);
+                alert("Error de red al conectar con la pasarela de pago.");
             } finally {
-                // Restauramos el botón
-                btnInscribirse.innerHTML = textoOriginal;
-                btnInscribirse.disabled = false;
+                btnProcesar.innerHTML = textoOriginal;
+                btnProcesar.disabled = false;
+                if(modalPagoInstance) modalPagoInstance.hide();
             }
         });
     }
