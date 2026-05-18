@@ -19,6 +19,17 @@ class Admin
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Obtener los datos de un usuario concreto para precargar el modal 
+    public function obtenerUsuarioPorId($id_usuario)
+    {
+        $query = "SELECT id_usuario, nombre, apellidos, email, id_rol FROM Usuario WHERE id_usuario = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$id_usuario]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+
     // Obtener todos los cursos (con el nombre del profesor)
     public function obtenerCursos()
     {
@@ -48,5 +59,36 @@ class Admin
         $query = "DELETE FROM Curso WHERE id_curso = ?";
         $stmt = $this->db->prepare($query);
         return $stmt->execute([$id_curso]);
+    }
+
+
+    // Actualizar los datos de un usuario (con o sin cambio de contraseña) ---
+    public function actualizarUsuario($id_usuario, $nombre, $apellidos, $email, $id_rol, $password = null)
+    {
+        try {
+            if (!empty($password)) {
+                // Si el administrador cambia la clave, la encriptamos de forma segura
+                $password_encriptada = password_hash($password, PASSWORD_BCRYPT);
+                $query = "UPDATE Usuario SET nombre = ?, apellidos = ?, email = ?, id_rol = ?, password = ? WHERE id_usuario = ?";
+                $stmt = $this->db->prepare($query);
+                return $stmt->execute([$nombre, $apellidos, $email, $id_rol, $password_encriptada, $id_usuario]);
+            } else {
+                // Si la deja en blanco, actualizamos el resto de campos respetando la clave actual
+                $query = "UPDATE Usuario SET nombre = ?, apellidos = ?, email = ?, id_rol = ? WHERE id_usuario = ?";
+                $stmt = $this->db->prepare($query);
+                return $stmt->execute([$nombre, $apellidos, $email, $id_rol, $id_usuario]);
+            }
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+    // Cambiar el estado de un curso (Aprobar / Ocultar)
+    public function cambiarEstadoCurso($id_curso, $nuevo_estado)
+    {
+        $query = "UPDATE Curso SET estado = ? WHERE id_curso = ?";
+        $stmt = $this->db->prepare($query);
+        return $stmt->execute([$nuevo_estado, $id_curso]);
     }
 }

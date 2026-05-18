@@ -9,9 +9,14 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 $controlador = new AdminController();
 
 if ($metodo === 'GET') {
-    // Si la petición GET pide el 'dashboard', le devolvemos todo
-    if (isset($_GET['accion']) && $_GET['accion'] === 'dashboard') {
-        echo json_encode($controlador->dashboard());
+    if (isset($_GET['accion'])) {
+        if ($_GET['accion'] === 'dashboard') {
+            echo json_encode($controlador->dashboard());
+        } elseif ($_GET['accion'] === 'detalle_usuario' && isset($_GET['id'])) {
+            echo json_encode($controlador->obtenerDetalleUsuario($_GET['id']));
+        } else {
+            echo json_encode(["status" => "error", "mensaje" => "Acción GET no reconocida."]);
+        }
     } else {
         echo json_encode(["status" => "error", "mensaje" => "Acción no especificada."]);
     }
@@ -22,6 +27,20 @@ if ($metodo === 'GET') {
     } else {
         echo json_encode(["status" => "error", "mensaje" => "Faltan parámetros para eliminar."]);
     }
+} elseif ($metodo === 'PUT') {
+    $datos = json_decode(file_get_contents('php://input'), true);
+    if (isset($datos['accion'])) {
+        if ($datos['accion'] === 'cambiar_estado') {
+            echo json_encode($controlador->procesarCambioEstado($datos));
+        } elseif ($datos['accion'] === 'editar_usuario') {
+            echo json_encode($controlador->procesarEdicionUsuario($datos));
+        } else {
+            echo json_encode(["status" => "error", "mensaje" => "Acción PUT no reconocida."]);
+        }
+    } else {
+        echo json_encode(["status" => "error", "mensaje" => "Faltan parámetros en la petición PUT."]);
+    }
 } else {
     echo json_encode(["status" => "error", "mensaje" => "Método no permitido"]);
 }
+?>
