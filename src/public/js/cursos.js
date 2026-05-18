@@ -55,9 +55,23 @@ async function cargarCursos() {
                 `;
             }
 
+            // =========================================================
+            // LÓGICA DE CURSO ADQUIRIDO (CARTEL Y BOTÓN)
+            // =========================================================
+            let badgeComprado = '';
+            let btnAccion = `<button onclick="verDetalle(${curso.id_curso})" class="btn btn-paideia rounded-pill px-4">VER CURSO</button>`;
+
+            if (curso.comprado == 1) {
+                // Etiqueta flotante sobre la imagen
+                badgeComprado = `<span class="position-absolute top-0 end-0 m-3 badge bg-success fs-6 shadow"><i class="bi bi-check-circle-fill me-1"></i>Adquirido</span>`;
+                // Cambiamos el botón por un atajo a la clase
+                btnAccion = `<button onclick="irAClase(${curso.id_curso})" class="btn btn-success rounded-pill px-4"><i class="bi bi-play-circle me-1"></i>IR A CLASE</button>`;
+            }
+
             const htmlCurso = `
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm border-0">
+                    <div class="card h-100 shadow-sm border-0 position-relative">
+                        ${badgeComprado}
                         <img src="${rutaImagen}" class="card-img-top" alt="${curso.titulo}" style="height: 200px; object-fit: cover;">
                         <div class="card-body d-flex flex-column">
                             <h3 class="card-title h5 fw-bold text-primary">${curso.titulo}</h3>
@@ -69,9 +83,7 @@ async function cargarCursos() {
 
                             <div class="mt-2 d-flex justify-content-between align-items-center border-top pt-3">
                                 <span class="precio-texto">${curso.precio} €</span>
-                                <button onclick="verDetalle(${curso.id_curso})" class="btn btn-paideia rounded-pill px-4">
-                                    VER CURSO
-                                </button>
+                                ${btnAccion}
                             </div>
                         </div>
                     </div>
@@ -86,8 +98,14 @@ async function cargarCursos() {
     }
 }
 
+// Redirige al detalle de compra
 function verDetalle(id) {
     window.location.href = `vista/cursos/detalle.php?id=${id}`;
+}
+
+// Redirige directamente a la clase si ya lo tiene
+function irAClase(id) {
+    window.location.href = `vista/alumno/clase.php?id=${id}`;
 }
 
 document.addEventListener('DOMContentLoaded', cargarCursos);

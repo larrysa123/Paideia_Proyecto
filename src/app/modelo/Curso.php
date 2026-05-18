@@ -9,16 +9,30 @@ class Curso
         $this->db = Conexion::conectar();
     }
 
-    public function obtenerTodos()
+    public function obtenerTodos($id_usuario = null)
     {
-        // Hacemos el COUNT para saber cuántos votos tiene en total, y leemos todas las columnas de Curso (incluida valoracion_media)
-        $query = "SELECT c.*, COUNT(v.estrellas) as total_votos
-                  FROM " . $this->table . " c
-                  LEFT JOIN valoracion_curso v ON c.id_curso = v.id_curso
-                  WHERE c.estado = 'publicado'
-                  GROUP BY c.id_curso";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
+        // Si hay un usuario logueado, cruzamos con Inscripcion para saber si lo ha comprado
+        if ($id_usuario) {
+            $query = "SELECT c.*, COUNT(v.estrellas) as total_votos,
+                             MAX(CASE WHEN i.id_usuario IS NOT NULL THEN 1 ELSE 0 END) as comprado
+                      FROM " . $this->table . " c
+                      LEFT JOIN valoracion_curso v ON c.id_curso = v.id_curso
+                      LEFT JOIN Inscripcion i ON c.id_curso = i.id_curso AND i.id_usuario = ?
+                      WHERE c.estado = 'publicado'
+                      GROUP BY c.id_curso";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([$id_usuario]);
+        } else {
+            // Si es un visitante anónimo, simplemente devolvemos 0 en "comprado"
+            $query = "SELECT c.*, COUNT(v.estrellas) as total_votos, 0 as comprado
+                      FROM " . $this->table . " c
+                      LEFT JOIN valoracion_curso v ON c.id_curso = v.id_curso
+                      WHERE c.estado = 'publicado'
+                      GROUP BY c.id_curso";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+        }
+        
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

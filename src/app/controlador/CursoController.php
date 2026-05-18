@@ -1,59 +1,70 @@
 <?php
-class CursoController {
-    
+class CursoController
+{
+
     // Antes: obtenerCursos
-    public function mostrarCatalogo() {
+    public function mostrarCatalogo()
+    {
+        // Miramos si hay alguien logueado. Si lo hay, guardamos su ID.
+        $id_usuario = isset($_SESSION['user']) ? $_SESSION['user']['id_usuario'] : null;
+
         $cursoModel = new Curso();
-        $lista = $cursoModel->obtenerTodos(); 
+        $lista = $cursoModel->obtenerTodos($id_usuario);
+
         return $lista ? ["status" => "success", "data" => $lista] : ["status" => "error", "mensaje" => "No hay cursos."];
     }
 
-    // Antes: obtenerMisCursos
-    public function mostrarPanelProfesor() {
+
+    public function mostrarPanelProfesor()
+    {
         if (!isset($_SESSION['user'])) return ["status" => "error", "mensaje" => "No logueado"];
-        
+
         $cursoModel = new Curso();
         $lista = $cursoModel->obtenerPorProfesor($_SESSION['user']['id_usuario']);
         return ["status" => "success", "data" => $lista];
     }
 
-    // Antes: crearCurso
-    public function procesarCreacion($datos) {
+
+    public function procesarCreacion($datos)
+    {
         $id_profesor = $_SESSION['user']['id_usuario'];
         $cursoModel = new Curso();
         $exito = $cursoModel->insertar($id_profesor, $datos['titulo'], $datos['descripcion'], $datos['precio'], $datos['imagen']);
         return $exito ? ["status" => "success", "mensaje" => "Curso creado"] : ["status" => "error", "mensaje" => "Error al guardar"];
     }
 
-    // NUEVA: El puente para eliminar
-    public function procesarEliminacion($id_curso) {
+    // El puente para eliminar
+    public function procesarEliminacion($id_curso)
+    {
         if (!isset($_SESSION['user'])) return ["status" => "error", "mensaje" => "No autorizado"];
-        
+
         $cursoModel = new Curso();
         $exito = $cursoModel->eliminar($id_curso, $_SESSION['user']['id_usuario']);
         return $exito ? ["status" => "success", "mensaje" => "Curso eliminado correctamente"] : ["status" => "error", "mensaje" => "No se pudo eliminar"];
     }
 
     // Prepara los datos para el formulario de edición
-    public function mostrarCurso($id_curso) {
+    public function mostrarCurso($id_curso)
+    {
         if (!isset($_SESSION['user'])) return ["status" => "error", "mensaje" => "No autorizado"];
-        
+
         $cursoModel = new Curso();
         $curso = $cursoModel->obtenerPorId($id_curso, $_SESSION['user']['id_usuario']);
-        
+
         return $curso ? ["status" => "success", "data" => $curso] : ["status" => "error", "mensaje" => "Curso no encontrado o no autorizado"];
     }
 
     // Recibe los datos nuevos y manda a guardar
-    public function procesarEdicion($datos) {
+    public function procesarEdicion($datos)
+    {
         if (!isset($_SESSION['user'])) return ["status" => "error", "mensaje" => "No autorizado"];
-        
+
         // Verificamos que al menos venga el ID del curso y los campos obligatorios
         if (isset($datos['id_curso'], $datos['titulo'], $datos['precio'])) {
             $cursoModel = new Curso();
             $exito = $cursoModel->actualizar(
-                $datos['id_curso'], 
-                $_SESSION['user']['id_usuario'], 
+                $datos['id_curso'],
+                $_SESSION['user']['id_usuario'],
                 htmlspecialchars(trim($datos['titulo'])),
                 htmlspecialchars(trim($datos['descripcion'])),
                 floatval($datos['precio']),
@@ -66,11 +77,12 @@ class CursoController {
 
 
 
-    // NUEVA: Muestra el curso al público sin pedir sesión
-    public function mostrarDetallePublico($id_curso) {
+    // Muestra el curso al público sin pedir sesión
+    public function mostrarDetallePublico($id_curso)
+    {
         $cursoModel = new Curso();
         $curso = $cursoModel->obtenerDetallePublico($id_curso);
-        
+
         return $curso ? ["status" => "success", "data" => $curso] : ["status" => "error", "mensaje" => "Este curso no existe o ya no está disponible."];
     }
 }
