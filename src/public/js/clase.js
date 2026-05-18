@@ -17,29 +17,29 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         if (resultado.status === 'success' && resultado.data.length > 0) {
             const videos = resultado.data;
+            const totalVideos = videos.length; // Guardamos el total para calcular porcentajes
+
             videos.forEach((video, index) => {
                 let urlEmbed = video.url_youtube;
                 if (urlEmbed.includes('watch?v=')) urlEmbed = urlEmbed.replace('watch?v=', 'embed/');
                 else if (urlEmbed.includes('youtu.be/')) urlEmbed = urlEmbed.replace('youtu.be/', 'youtube.com/embed/');
 
                 const claseActivo = index === 0 ? 'bg-light border-start border-primary border-4 fw-bold' : 'boton-leccion-light border-start border-transparent border-4';
-
-                // Limpiamos la descripción de saltos de línea para evitar errores de sintaxis en JS
                 const descLimpia = (video.descripcion || "Sin descripción adicional.").replace(/(\r\n|\n|\r)/gm, " ");
+                
+                const numLeccion = index + 1; // Para saber qué número de vídeo es (1, 2, 3...)
 
-                // AÑADIDO: Pasamos video.id_video y la descripción a cambiarVideo
+                // AÑADIDO: Pasamos numLeccion y totalVideos a la función cambiarVideo
                 listaLecciones.innerHTML += `
-                    <button onclick="cambiarVideo('${urlEmbed}', '${video.titulo.replace(/'/g, "\\'")}', this, ${video.id_video}, '${descLimpia.replace(/'/g, "\\'")}')" 
+                    <button onclick="cambiarVideo('${urlEmbed}', '${video.titulo.replace(/'/g, "\\'")}', this, ${video.id_video}, '${descLimpia.replace(/'/g, "\\'")}', ${numLeccion}, ${totalVideos})" 
                             class="list-group-item list-group-item-action text-dark py-3 boton-leccion ${claseActivo}">
                         <span class="badge bg-paideia me-2">${video.orden}</span> ${video.titulo}
                     </button>
                 `;
 
-                // Si es el primer vídeo, lo cargamos automáticamente
                 if (index === 0) {
-                    // Usamos un pequeño timeout para asegurar que el botón se ha renderizado antes de seleccionarlo
                     setTimeout(() => {
-                        cambiarVideo(urlEmbed, video.titulo, listaLecciones.firstElementChild, video.id_video, descLimpia);
+                        cambiarVideo(urlEmbed, video.titulo, listaLecciones.firstElementChild, video.id_video, descLimpia, numLeccion, totalVideos);
                     }, 50);
                 }
             });
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 
     // ==========================================
-    // LÓGICA DEL FORO DE DUDAS (COMENTARIOS)
+    // LÓGICA DEL FORO Y VALORACIONES INDIVIDUALES
     // ==========================================
     const btnEnviarComentario = document.getElementById('btn-enviar-comentario');
     if (btnEnviarComentario) {
@@ -74,10 +74,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const data = await res.json();
                 if (data.status === 'success') {
                     document.getElementById('texto-nuevo-comentario').value = '';
-                    cargarForo(idVideo); // Recargar comentarios
-                } else {
-                    alert(data.mensaje);
-                }
+                    cargarForo(idVideo);
+                } else alert(data.mensaje);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -86,7 +84,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
-    // Lógica para el botón "Responder" de cada comentario
     const contenedorComentarios = document.getElementById('contenedor-comentarios');
     if (contenedorComentarios) {
         contenedorComentarios.addEventListener('click', async function (e) {
@@ -95,7 +92,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const idVideo = document.getElementById('id_video_actual').value;
                 const contenedorResp = document.getElementById(`caja-respuesta-${idPadre}`);
 
-                // Si ya está abierto, lo mandamos. Si no, lo mostramos.
                 if (contenedorResp.classList.contains('d-none')) {
                     contenedorResp.classList.remove('d-none');
                 } else {
@@ -109,18 +105,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                             body: JSON.stringify({ id_video: idVideo, texto: texto, id_padre: idPadre })
                         });
                         const data = await res.json();
-                        if (data.status === 'success') {
-                            cargarForo(idVideo);
-                        }
+                        if (data.status === 'success') cargarForo(idVideo);
                     } catch (err) { }
                 }
             }
         });
     }
 
-    // ==========================================
-    // LÓGICA DE VALORACIÓN DEL VÍDEO INDIVIDUAL
-    // ==========================================
     const contenedorEstrellasVideo = document.getElementById('estrellas-video');
     if (contenedorEstrellasVideo) {
         contenedorEstrellasVideo.addEventListener('click', async function (e) {
@@ -128,7 +119,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const puntuacion = e.target.getAttribute('data-value');
                 const idVideo = document.getElementById('id_video_actual').value;
                 const feedbackVideo = document.getElementById('feedback-video');
-
                 pintarEstrellasVideo(puntuacion);
 
                 try {
@@ -147,9 +137,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
-    // ==========================================
-    // LÓGICA DEL MODAL DE CURSO GENERAL (INTACTO)
-    // ==========================================
+    // Modal de Valoración General de Curso
     const modalValoracion = document.getElementById('modalValoracion');
     const contenedorEstrellas = document.getElementById('modal-estrellas-curso');
     const textoComentario = document.getElementById('modal-texto-curso');
@@ -219,9 +207,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const modalInstance = bootstrap.Modal.getInstance(modalValoracion);
                     modalInstance.hide();
                     alert("¡Gracias por tu valoración!");
-                } else {
-                    feedback.innerText = data.mensaje;
-                }
+                } else feedback.innerText = data.mensaje;
             } catch (error) {
                 feedback.innerText = "Error de conexión con el servidor.";
             } finally {
@@ -233,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 // ==========================================
-// FUNCIONES AUXILIARES GLOBALES
+// FUNCIONES AUXILIARES GLOBALES Y PROGRESO
 // ==========================================
 
 function pintarEstrellasVideo(puntuacion) {
@@ -249,11 +235,10 @@ function pintarEstrellasVideo(puntuacion) {
     });
 }
 
-function cambiarVideo(urlEmbed, titulo, boton, idVideo, descripcion = "") {
+function cambiarVideo(urlEmbed, titulo, boton, idVideo, descripcion = "", numLeccion = 1, totalVideos = 1) {
     document.getElementById('reproductor-youtube').src = urlEmbed;
     document.getElementById('titulo-leccion-actual').innerText = titulo;
 
-    // Título del foro y descripción del vídeo
     const foroTitulo = document.getElementById('titulo-foro-actual');
     if (foroTitulo) foroTitulo.innerText = titulo;
     if (descripcion) document.getElementById('desc-leccion-actual').innerText = descripcion;
@@ -264,13 +249,11 @@ function cambiarVideo(urlEmbed, titulo, boton, idVideo, descripcion = "") {
         btn.classList.add('boton-leccion-light', 'border-transparent');
     });
 
-    // Si la llamada viene de inicializar la página puede que el botón no exista aún
     if (boton) {
         boton.classList.remove('boton-leccion-light', 'border-transparent');
         boton.classList.add('bg-light', 'border-primary', 'fw-bold');
     }
 
-    // Registrar el id del vídeo y mostrar las secciones
     const idVideoActual = document.getElementById('id_video_actual');
     if (idVideoActual) {
         idVideoActual.value = idVideo;
@@ -280,6 +263,19 @@ function cambiarVideo(urlEmbed, titulo, boton, idVideo, descripcion = "") {
         cargarNotaVideo(idVideo);
         cargarForo(idVideo);
     }
+
+    // =========================================================
+    // LÓGICA DE ACTUALIZACIÓN DEL PROGRESO ALUMNO
+    // =========================================================
+    const idCurso = document.getElementById('id_curso_oculto').value;
+    const porcentajeNuevo = Math.round((numLeccion / totalVideos) * 100);
+    
+    // Llamada silenciosa al servidor para actualizar
+    fetch(BASE_URL + 'app/api/inscripciones.php', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accion: 'actualizar_progreso', id_curso: idCurso, progreso: porcentajeNuevo })
+    }).catch(err => console.error("Error silencioso guardando progreso:", err));
 }
 
 async function cargarNotaVideo(idVideo) {
@@ -288,9 +284,7 @@ async function cargarNotaVideo(idVideo) {
     try {
         const res = await fetch(BASE_URL + `app/api/foro_video.php?id_video=${idVideo}&accion=mivoto`);
         const json = await res.json();
-        if (json.status === 'success' && json.data.estrellas) {
-            pintarEstrellasVideo(json.data.estrellas);
-        }
+        if (json.status === 'success' && json.data.estrellas) pintarEstrellasVideo(json.data.estrellas);
     } catch (err) { }
 }
 
@@ -314,7 +308,6 @@ async function cargarForo(idVideo) {
             let htmlForo = '';
             foro.forEach(com => {
                 const badgeProfe = com.nombre_rol === 'profesor' ? '<span class="badge bg-primary ms-2 small">Profesor</span>' : '';
-
                 let htmlRespuestas = '';
                 if (com.respuestas && com.respuestas.length > 0) {
                     com.respuestas.forEach(resp => {
@@ -346,21 +339,16 @@ async function cargarForo(idVideo) {
                                     <small class="text-muted" style="font-size: 0.8rem;">${com.fecha}</small>
                                 </div>
                                 <p class="mb-2 text-secondary">${com.texto}</p>
-                                
                                 <div class="d-flex align-items-center mt-2">
                                     <button class="btn btn-sm btn-outline-secondary me-2 btn-responder-duda" data-id="${com.id_comentario}">
                                         <i class="bi bi-reply-fill"></i> Responder
                                     </button>
                                 </div>
-
                                 <div id="caja-respuesta-${com.id_comentario}" class="d-none mt-2 d-flex">
                                     <input type="text" id="input-respuesta-${com.id_comentario}" class="form-control form-control-sm me-2" placeholder="Escribe tu respuesta...">
                                     <button class="btn btn-sm btn-primary btn-responder-duda" data-id="${com.id_comentario}">Enviar</button>
                                 </div>
-
-                                <div class="ms-3 mt-2">
-                                    ${htmlRespuestas}
-                                </div>
+                                <div class="ms-3 mt-2">${htmlRespuestas}</div>
                             </div>
                         </div>
                     </div>

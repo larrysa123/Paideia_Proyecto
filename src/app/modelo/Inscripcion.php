@@ -44,5 +44,14 @@ class Inscripcion
         $stmt->execute([$id_usuario]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Actualizar el progreso del alumno en un curso
+    public function actualizarProgreso($id_usuario, $id_curso, $progreso)
+    {
+        // Usamos GREATEST para asegurarnos de que el progreso solo sube, nunca baja al repasar vídeos antiguos
+        $query = "UPDATE " . $this->table . " SET progreso = GREATEST(progreso, ?) WHERE id_usuario = ? AND id_curso = ?";
+        $stmt = $this->db->prepare($query);
+        return $stmt->execute([$progreso, $id_usuario, $id_curso]);
+    }
 }
 ?>

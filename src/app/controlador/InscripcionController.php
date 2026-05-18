@@ -53,4 +53,29 @@ class InscripcionController
 
         return ["status" => "success", "data" => $lista];
     }
+
+    // Procesar el avance de la barra de progreso 
+    public function procesarAvanceProgreso($datos)
+    {
+        // Verificar que es un alumno
+        if (!isset($_SESSION['user']) || $_SESSION['user']['id_rol'] != 1) {
+            return ["status" => "error", "mensaje" => "No autorizado."];
+        }
+
+        if (isset($datos['id_curso'], $datos['progreso'])) {
+            $id_usuario = $_SESSION['user']['id_usuario'];
+            $id_curso = $datos['id_curso'];
+            $progreso = floatval($datos['progreso']);
+
+            // Límite de seguridad para que no pase del 100%
+            if ($progreso > 100) $progreso = 100;
+
+            $inscripcionModel = new Inscripcion();
+            $exito = $inscripcionModel->actualizarProgreso($id_usuario, $id_curso, $progreso);
+
+            return $exito ? ["status" => "success", "mensaje" => "Progreso guardado."] 
+                          : ["status" => "error", "mensaje" => "Error al actualizar progreso en BD."];
+        }
+        return ["status" => "error", "mensaje" => "Faltan datos de progreso."];
+    }
 }
