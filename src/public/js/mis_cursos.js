@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', async function () {
+    // 1. CARGAR TARJETAS DE CURSOS
     try {
         const respuesta = await fetch(BASE_URL + 'app/api/inscripciones.php');
         const resultado = await respuesta.json();
@@ -19,13 +20,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const imgPath = curso.imagen ? `../../assets/img/cursos/${curso.imagen}` : 'https://via.placeholder.com/300x200';
                 const progreso = curso.progreso || 0;
 
-                // =========================================================
-                // NUEVA LÓGICA LOGRADA: COMPROBACIÓN DE LAS ESTRELLAS EN PANEL
-                // =========================================================
                 let bloqueValoracionHTML = '';
 
                 if (curso.mi_nota && curso.mi_nota > 0) {
-                    // Si el alumno ya votó este curso, pintamos sus estrellas rellenas y doradas
                     let estrellasDoradas = '';
                     for (let i = 1; i <= 5; i++) {
                         if (i <= curso.mi_nota) {
@@ -34,13 +31,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                             estrellasDoradas += `<i class="bi bi-star text-warning me-1"></i>`;
                         }
                     }
-                    // Metemos la clase 'btn-abrir-modal-valoracion' para que al pulsar en las estrellas también pueda editar la reseña
                     bloqueValoracionHTML = `
                         <div class="btn-abrir-modal-valoracion cursor-pointer" data-id="${curso.id_curso}" style="cursor: pointer;">
                             ${estrellasDoradas} <span class="small text-muted">(Tu nota)</span>
                         </div>`;
                 } else {
-                    // Si no ha votado todavía, dejamos el botón amarillo de antes
                     bloqueValoracionHTML = `
                         <a href="#" class="text-warning text-decoration-none small fw-bold btn-abrir-modal-valoracion" data-id="${curso.id_curso}">
                             <i class="bi bi-star-fill"></i> Valorar curso
@@ -82,9 +77,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.error("Error de fetch:", error);
     }
 
-    // =========================================================
-    // Lógica del Modal en Mis Cursos
-    // =========================================================
+    // 2. LÓGICA DEL MODAL DE ESTRELLAS
     const contenedorEstrellas = document.getElementById('modal-estrellas-curso');
     const textoComentario = document.getElementById('modal-texto-curso');
     const btnGuardar = document.getElementById('btn-guardar-resena');
@@ -109,7 +102,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             e.preventDefault();
             const idCurso = btnValorar.getAttribute('data-id');
 
-            // Corregimos la asignación del ID en el modal (buscando el input de mis_cursos.php)
             const inputOculto = document.getElementById('modal_id_curso_oculto') || document.getElementById('id_curso_oculto');
             if (inputOculto) inputOculto.value = idCurso;
 
@@ -168,7 +160,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
                 const data = await res.json();
                 if (data.status === 'success') {
-                    // Recargamos la página para que pinte las nuevas estrellas actualizadas al instante
                     window.location.reload();
                 } else {
                     feedback.innerText = data.mensaje;
@@ -179,6 +170,53 @@ document.addEventListener('DOMContentLoaded', async function () {
                 feedback.innerText = "Error de red.";
                 btnGuardar.disabled = false;
                 btnGuardar.innerText = "Guardar Reseña";
+            }
+        });
+    }
+
+    // =========================================================
+    // NUEVA LÓGICA: CARGAR HISTORIAL DE COMPRAS
+    // =========================================================
+    const tabHistorial = document.getElementById('historial-tab');
+    if (tabHistorial) {
+        tabHistorial.addEventListener('click', async function() {
+            const tbody = document.getElementById('tabla-historial');
+            
+            // Si ya tiene contenido (y no es el loader), no volvemos a llamar a la BD
+            if (tbody.children.length > 1 || !tbody.innerHTML.includes('spinner')) return;
+
+            try {
+                const res = await fetch(BASE_URL + 'app/api/pedidos.php?accion=historial');
+                const json = await res.json();
+
+                if (json.status === 'success') {
+                    const recibos = json.data;
+                    tbody.innerHTML = ''; // Limpiar loader
+
+                    if (recibos.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Aún no tienes recibos de compra.</td></tr>';
+                        return;
+                    }
+
+                    recibos.forEach(r => {
+                        // Formateamos el ID 
+                        const idFormat = '#' + r.id_pedido.toString().padStart(4, '0');
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td class="text-muted fw-bold">${idFormat}</td>
+                                <td>${r.fecha}</td>
+                                <td class="text-dark fw-bold">${r.curso_titulo}</td>
+                                <td><span class="badge bg-secondary"><i class="bi bi-credit-card me-1"></i>${r.metodo_pago}</span></td>
+                                <td class="text-end text-success fw-bold">${r.total} €</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">${json.mensaje}</td></tr>`;
+                }
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error al cargar el historial.</td></tr>';
             }
         });
     }

@@ -40,5 +40,19 @@ class Pedido {
             return false;
         }
     }
+
+    // Obtener el historial de recibos/facturas de un alumno
+    public function obtenerHistorialPorUsuario($id_usuario)
+    {
+        $query = "SELECT p.id_pedido, p.total, p.metodo_pago, p.fecha, c.titulo AS curso_titulo
+                  FROM Pedido p
+                  JOIN Detalle_Pedido dp ON p.id_pedido = dp.id_pedido
+                  JOIN Curso c ON dp.id_curso = c.id_curso
+                  WHERE p.id_usuario = ?
+                  ORDER BY p.fecha DESC";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$id_usuario]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

@@ -23,6 +23,11 @@ require_once __DIR__ . '/../includes/header.php';
                 <i class="bi bi-award me-2"></i>Certificados
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="historial-tab" data-bs-toggle="tab" data-bs-target="#historial" type="button" role="tab">
+                <i class="bi bi-receipt me-2"></i>Mis Recibos
+            </button>
+        </li>
     </ul>
 
     <div class="tab-content" id="panel-tabsContent">
@@ -46,6 +51,25 @@ require_once __DIR__ . '/../includes/header.php';
                 <i class="bi bi-award text-muted" style="font-size: 3rem;"></i>
                 <h5 class="mt-3 text-muted">Aún no tienes certificados</h5>
                 <p class="text-muted">Completa el 100% de un curso para obtener tu diploma.</p>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="historial" role="tabpanel" tabindex="0">
+            <div class="table-responsive bg-white shadow-sm rounded-3 p-3 border-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-muted small">Nº de Pedido</th>
+                            <th class="text-muted small">Fecha</th>
+                            <th class="text-muted small">Curso Adquirido</th>
+                            <th class="text-muted small">Método de Pago</th>
+                            <th class="text-muted small text-end">TotalPagado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historial">
+                        <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

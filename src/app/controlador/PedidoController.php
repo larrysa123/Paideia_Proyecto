@@ -30,5 +30,19 @@ class PedidoController {
         }
         return ["status" => "error", "mensaje" => "Faltan datos para procesar el pedido."];
     }
+
+    // Procesar la petición del historial
+    public function obtenerHistorial()
+    {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['id_rol'] != 1) {
+            return ["status" => "error", "mensaje" => "No autorizado."];
+        }
+
+        $id_usuario = $_SESSION['user']['id_usuario'];
+        $pedidoModel = new Pedido();
+        $historial = $pedidoModel->obtenerHistorialPorUsuario($id_usuario);
+
+        return ["status" => "success", "data" => $historial];
+    }
 }
 ?>
