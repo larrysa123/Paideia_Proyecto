@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Cargamos tanto cursos como comentarios al iniciar la página
     cargarMisCursos();
+    cargarComentariosProfesor(); 
     
     // Escuchar cuando el profesor hace clic en la pestaña "Comentarios"
+    // (Opcional, para refrescar datos si el usuario hace clic, aunque ya estén cargados)
     const tabComentarios = document.getElementById('comentarios-tab');
     if (tabComentarios) {
         tabComentarios.addEventListener('click', cargarComentariosProfesor);
@@ -64,16 +67,20 @@ async function cargarMisCursos() {
 }
 
 // =======================================================
-// NUEVO: LÓGICA DE LA PESTAÑA COMENTARIOS
+// LÓGICA DE LA PESTAÑA COMENTARIOS
 // =======================================================
 async function cargarComentariosProfesor() {
     const contenedor = document.getElementById('comentarios');
     const tabComentarios = document.getElementById('comentarios-tab');
     
-    contenedor.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+    // Solo mostramos el spinner si la pestaña está activa, para no dar un salto visual en el fondo
+    if(tabComentarios.classList.contains('active')){
+       contenedor.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+    }
 
     try {
-        const respuesta = await fetch(BASE_URL + 'app/api/foro_video.php?accion=mis_comentarios_profesor');
+        // Desactivamos la caché para forzar al navegador a traer las dudas nuevas en tiempo real.
+        const respuesta = await fetch(BASE_URL + 'app/api/foro_video.php?accion=mis_comentarios_profesor', { cache: 'no-store' });
         const resultado = await respuesta.json();
 
         if (resultado.status === 'success') {
@@ -149,7 +156,6 @@ async function responderDuda(idVideo, idPadre) {
         if (data.status === 'success') {
             alert("Respuesta enviada con éxito.");
             textarea.value = ''; 
-            // Opcional: Podríamos recargar la bandeja entera, o solo borrar el texto
             cargarComentariosProfesor(); 
         } else {
             alert(data.mensaje);
@@ -160,7 +166,7 @@ async function responderDuda(idVideo, idPadre) {
 }
 
 // =======================================================
-// FUNCIONES ANTIGUAS
+// FUNCIONES GESTIONAR TEMARIO Y ELIMINAR CURSO
 // =======================================================
 function gestionarTemario(id) {
     window.location.href = `gestionar_videos.php?id=${id}`;
