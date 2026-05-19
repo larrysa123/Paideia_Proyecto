@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async function() {
-    // 1. Obtener el ID del curso desde la URL (ej: editar_curso.php?id=5)
+    // Obtener el ID del curso desde la URL (ej: editar_curso.php?id=5)
     const urlParams = new URLSearchParams(window.location.search);
     const idCurso = urlParams.get('id');
 
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
 
-    // 2. FASE DE PRECARGA: Pedir los datos actuales a la API
+    // FASE DE PRECARGA
     try {
         const respuesta = await fetch(BASE_URL + 'app/api/cursos.php?id=' + idCurso);
         const resultado = await respuesta.json();
@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.getElementById('titulo').value = curso.titulo;
             document.getElementById('descripcion').value = curso.descripcion;
             document.getElementById('precio').value = curso.precio;
-            document.getElementById('imagen').value = curso.imagen;
+            
+            // Mostramos el nombre de la imagen al profesor y lo guardamos en el input oculto
+            document.getElementById('nombre_imagen_actual').innerText = curso.imagen ? curso.imagen : 'Ninguna';
+            document.getElementById('imagen_actual').value = curso.imagen || '';
         } else {
             alert("Error al cargar el curso: " + resultado.mensaje);
         }
@@ -29,25 +32,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.error("Error en precarga:", error);
     }
 
-    // 3. FASE DE GUARDADO: Escuchar cuando el usuario pulse "Guardar Cambios"
+    // FASE DE GUARDADO
     const formulario = document.getElementById('formEditarCurso');
     formulario.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const datosModificados = {
-            id_curso: document.getElementById('id_curso').value,
-            titulo: document.getElementById('titulo').value,
-            descripcion: document.getElementById('descripcion').value,
-            precio: document.getElementById('precio').value,
-            imagen: document.getElementById('imagen').value
-        };
+        // Empaquetamos archivos y textos juntos
+        const datosFormulario = new FormData(formulario);
+
+        const btnSubmit = formulario.querySelector('button[type="submit"]');
+        const textoOriginal = btnSubmit.innerHTML;
+        btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Guardando...';
+        btnSubmit.disabled = true;
 
         try {
-            // Enviamos por método PUT (Actualizar)
+            // Usamos POST para que PHP pueda leer la foto nueva
             const res = await fetch(BASE_URL + 'app/api/cursos.php', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datosModificados)
+                method: 'POST', 
+                body: datosFormulario
             });
 
             const final = await res.json();
@@ -60,6 +62,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         } catch (error) {
             console.error("Error al actualizar:", error);
+            alert("Hubo un error al intentar guardar los cambios.");
+        } finally {
+            btnSubmit.innerHTML = textoOriginal;
+            btnSubmit.disabled = false;
         }
     });
 });

@@ -32,7 +32,15 @@ if ($metodo === 'GET') {
             $datos['archivo_imagen'] = $_FILES['imagen'];
         }
     }
-    echo json_encode($controlador->procesarCreacion($datos));
+
+    // ¿Viene el ID oculto del formulario de edición?
+    if (isset($datos['id_curso']) && !empty($datos['id_curso'])) {
+        // Es una edición
+        echo json_encode($controlador->procesarEdicion($datos));
+    } else {
+        // Es una creación nueva
+        echo json_encode($controlador->procesarCreacion($datos));
+    }
     
 } elseif ($metodo === 'PUT') {
     // Actualizar curso existente

@@ -76,22 +76,39 @@ class CursoController
         return $curso ? ["status" => "success", "data" => $curso] : ["status" => "error", "mensaje" => "Curso no encontrado o no autorizado"];
     }
 
-    // Recibe los datos nuevos y manda a guardar
     public function procesarEdicion($datos)
     {
         if (!isset($_SESSION['user'])) return ["status" => "error", "mensaje" => "No autorizado"];
 
         // Verificamos que al menos venga el ID del curso y los campos obligatorios
         if (isset($datos['id_curso'], $datos['titulo'], $datos['precio'])) {
+            $id_profesor = $_SESSION['user']['id_usuario'];
+
+            // 1. Partimos asumiendo que se queda la foto vieja
+            $nombre_imagen = isset($datos['imagen_actual']) ? $datos['imagen_actual'] : null;
+
+            // 2. Si el profesor sube una foto NUEVA, la guardamos y cambiamos el nombre
+            if (isset($datos['archivo_imagen']) && $datos['archivo_imagen']['error'] === UPLOAD_ERR_OK) {
+                $archivo = $datos['archivo_imagen'];
+                $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+                $nombre_imagen = 'curso_' . $id_profesor . '_' . time() . '.' . $extension;
+
+                $ruta_destino = __DIR__ . '/../../public/assets/img/cursos/' . $nombre_imagen;
+                if (!move_uploaded_file($archivo['tmp_name'], $ruta_destino)) {
+                    return ["status" => "error", "mensaje" => "Error al mover la nueva imagen."];
+                }
+            }
+
             $cursoModel = new Curso();
             $exito = $cursoModel->actualizar(
                 $datos['id_curso'],
-                $_SESSION['user']['id_usuario'],
+                $id_profesor,
                 htmlspecialchars(trim($datos['titulo'])),
                 htmlspecialchars(trim($datos['descripcion'])),
                 floatval($datos['precio']),
-                trim($datos['imagen'])
+                $nombre_imagen // Enviamos la vieja o la nueva, la que haya ganado
             );
+
             return $exito ? ["status" => "success", "mensaje" => "¡Curso actualizado con éxito!"] : ["status" => "error", "mensaje" => "No se detectaron cambios o hubo un error."];
         }
         return ["status" => "error", "mensaje" => "Faltan campos obligatorios."];
