@@ -2,7 +2,6 @@
 class CursoController
 {
 
-    // Antes: obtenerCursos
     public function mostrarCatalogo()
     {
         // Miramos si hay alguien logueado. Si lo hay, guardamos su ID.
@@ -28,9 +27,32 @@ class CursoController
     public function procesarCreacion($datos)
     {
         $id_profesor = $_SESSION['user']['id_usuario'];
+        $nombre_imagen = null;
+
+        // LÓGICA DE SUBIDA DE IMAGEN
+        if (isset($datos['archivo_imagen']) && $datos['archivo_imagen']['error'] === UPLOAD_ERR_OK) {
+            $archivo = $datos['archivo_imagen'];
+
+            // Sacamos la extensión (jpg, png...)
+            $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+
+            // Creamos un nombre único: "curso_IdDelProfesor_Milisegundos.jpg"
+            $nombre_imagen = 'curso_' . $id_profesor . '_' . time() . '.' . $extension;
+
+            // Ruta donde se va a guardar físicamente
+            $ruta_destino = __DIR__ . '/../../public/assets/img/cursos/' . $nombre_imagen;
+
+            if (!move_uploaded_file($archivo['tmp_name'], $ruta_destino)) {
+                return ["status" => "error", "mensaje" => "Error al mover la imagen al servidor."];
+            }
+        }
+
         $cursoModel = new Curso();
-        $exito = $cursoModel->insertar($id_profesor, $datos['titulo'], $datos['descripcion'], $datos['precio'], $datos['imagen']);
-        return $exito ? ["status" => "success", "mensaje" => "Curso creado"] : ["status" => "error", "mensaje" => "Error al guardar"];
+        // Insertamos usando el nombre único generado
+        $exito = $cursoModel->insertar($id_profesor, $datos['titulo'], $datos['descripcion'], $datos['precio'], $nombre_imagen);
+
+        return $exito ? ["status" => "success", "mensaje" => "¡Curso y portada subidos con éxito!"]
+            : ["status" => "error", "mensaje" => "Error al guardar el registro en la base de datos."];
     }
 
     // El puente para eliminar

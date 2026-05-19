@@ -56,10 +56,9 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
 
                         <div class="col-md-6 mb-4">
-                            <label for="imagen" class="form-label form-label-paideia">Nombre de la Imagen</label>
-                            <input type="text" class="form-control" id="imagen" name="imagen"
-                                placeholder="Ej: ajedrez.png">
-                            <div class="form-text form-text-paideia">Escribe solo el nombre del archivo con su extensión (.png, .jpg). La imagen debe estar subida en la carpeta de assets.</div>
+                            <label for="imagen" class="form-label form-label-paideia">Portada del Curso</label>
+                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/jpeg, image/png, image/webp">
+                            <div class="form-text form-text-paideia">Sube una imagen atractiva (Formatos: JPG, PNG, WEBP).</div>
                         </div>
                     </div>
 

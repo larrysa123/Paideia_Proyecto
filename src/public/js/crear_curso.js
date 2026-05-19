@@ -1,29 +1,24 @@
-// 1. Esperamos a que la página cargue por completo
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // 2. Buscamos el formulario
     const formularioCrear = document.getElementById('formCrearCurso');
 
-    // 3. ESCUDO: Solo ejecutamos esto si el formulario existe en la página actual
     if (formularioCrear) {
-        
         formularioCrear.addEventListener('submit', async function(evento) {
             evento.preventDefault(); 
+            
+            // Creamos un objeto FormData para poder adjuntar archivos físicos
+            const datosFormulario = new FormData(formularioCrear);
 
-            // Recogemos los datos del formulario de creación
-            const datosCurso = {
-                titulo: document.getElementById('titulo').value,
-                descripcion: document.getElementById('descripcion').value,
-                precio: document.getElementById('precio').value,
-                imagen: document.getElementById('imagen').value
-            };
+            // Efecto visual en el botón
+            const btnSubmit = formularioCrear.querySelector('button[type="submit"]');
+            const textoOriginal = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Subiendo...';
+            btnSubmit.disabled = true;
 
             try {
-                // Enviamos a la API
+                // Al usar FormData NO enviamos el header Content-Type, el navegador lo calcula solo
                 const respuesta = await fetch(BASE_URL + 'app/api/cursos.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(datosCurso)
+                    body: datosFormulario
                 });
 
                 const datos = await respuesta.json();
@@ -34,9 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     alert("Error: " + datos.mensaje);
                 }
-
             } catch (error) {
                 console.error("Error de conexión:", error);
+                alert("Hubo un error al intentar subir el curso.");
+            } finally {
+                btnSubmit.innerHTML = textoOriginal;
+                btnSubmit.disabled = false;
             }
         });
     }

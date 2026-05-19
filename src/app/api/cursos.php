@@ -9,7 +9,7 @@ if ($metodo === 'GET') {
         // Precarga para EDITAR (Privado - Pide sesión)
         echo json_encode($controlador->mostrarCurso($_GET['id']));
     } elseif (isset($_GET['id_publico'])) {
-        // NUEVO: Detalle para ALUMNOS (Público - Sin sesión)
+        // Detalle para ALUMNOS (Público - Sin sesión)
         echo json_encode($controlador->mostrarDetallePublico($_GET['id_publico']));
     } elseif (isset($_GET['mis_cursos'])) {
         // Panel del profesor
@@ -18,14 +18,24 @@ if ($metodo === 'GET') {
         // Catálogo general (index.php)
         echo json_encode($controlador->mostrarCatalogo());
     }
-    // ... resto del archivo (POST, PUT, DELETE)
 
 } elseif ($metodo === 'POST') {
-    // Crear curso nuevo
-    $datos = json_decode(file_get_contents('php://input'), true);
+    // Detectamos si es una petición JSON (para otras funciones) o un FormData (Subida de curso)
+    $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+    
+    if (strpos($contentType, 'application/json') !== false) {
+        $datos = json_decode(file_get_contents('php://input'), true);
+    } else {
+        // Es un formulario Multipart (FormData con archivo)
+        $datos = $_POST;
+        if (isset($_FILES['imagen'])) {
+            $datos['archivo_imagen'] = $_FILES['imagen'];
+        }
+    }
     echo json_encode($controlador->procesarCreacion($datos));
+    
 } elseif ($metodo === 'PUT') {
-    // NUEVO: Actualizar curso existente
+    // Actualizar curso existente
     $datos = json_decode(file_get_contents('php://input'), true);
     echo json_encode($controlador->procesarEdicion($datos));
 } elseif ($metodo === 'DELETE') {
