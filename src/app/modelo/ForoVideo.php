@@ -99,21 +99,27 @@ class ForoVideo
         }
     }
 
-    // --- NUEVA FUNCIÓN PARA EL PANEL DEL PROFESOR ---
+   // PANEL DEL PROFESOR (ACTUALIZADA CON ESTADOS) 
     public function obtenerComentariosPorProfesor($id_profesor)
     {
-        // Buscamos solo los comentarios principales (id_padre IS NULL) de los cursos que le pertenecen
+        // Buscamos los comentarios principales y contamos si el profesor ya ha respondido
         $query = "SELECT cv.id_comentario, cv.texto, cv.fecha, cv.id_video,
                          u.nombre as alumno_nombre, u.apellidos as alumno_apellidos, 
-                         v.titulo as video_titulo, c.titulo as curso_titulo
+                         v.titulo as video_titulo, c.titulo as curso_titulo,
+                         (SELECT COUNT(id_comentario) FROM Comentario_Video 
+                          WHERE id_padre = cv.id_comentario AND id_usuario = ?) as respondido
                   FROM Comentario_Video cv
                   JOIN Usuario u ON cv.id_usuario = u.id_usuario
                   JOIN Video v ON cv.id_video = v.id_video
                   JOIN Curso c ON v.id_curso = c.id_curso
                   WHERE c.id_profesor = ? AND cv.id_padre IS NULL
-                  ORDER BY cv.fecha DESC";
+                  ORDER BY respondido ASC, cv.fecha DESC";
+                  
         $stmt = $this->db->prepare($query);
-        $stmt->execute([$id_profesor]);
+        // Le pasamos el ID dos veces: una para el SELECT (contar respuestas) y otra para el WHERE
+        $stmt->execute([$id_profesor, $id_profesor]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    
 }

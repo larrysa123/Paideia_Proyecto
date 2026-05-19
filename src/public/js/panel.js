@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Cargamos tanto cursos como comentarios al iniciar la página
     cargarMisCursos();
-    cargarComentariosProfesor(); 
-    
+    cargarComentariosProfesor();
+
     // Escuchar cuando el profesor hace clic en la pestaña "Comentarios"
     // (Opcional, para refrescar datos si el usuario hace clic, aunque ya estén cargados)
     const tabComentarios = document.getElementById('comentarios-tab');
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 async function cargarMisCursos() {
     const contenedor = document.getElementById('contenedor-mis-cursos');
-    const tabCursos = document.getElementById('cursos-tab'); 
+    const tabCursos = document.getElementById('cursos-tab');
 
     try {
         const respuesta = await fetch(BASE_URL + 'app/api/cursos.php?mis_cursos=true');
@@ -21,7 +21,7 @@ async function cargarMisCursos() {
 
         if (resultado.status === 'success') {
             const cursos = resultado.data;
-            contenedor.innerHTML = ''; 
+            contenedor.innerHTML = '';
             tabCursos.innerHTML = `<i class="bi bi-book me-2"></i>Mis Cursos (${cursos.length})`;
 
             cursos.forEach(curso => {
@@ -72,10 +72,10 @@ async function cargarMisCursos() {
 async function cargarComentariosProfesor() {
     const contenedor = document.getElementById('comentarios');
     const tabComentarios = document.getElementById('comentarios-tab');
-    
+
     // Solo mostramos el spinner si la pestaña está activa, para no dar un salto visual en el fondo
-    if(tabComentarios.classList.contains('active')){
-       contenedor.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+    if (tabComentarios.classList.contains('active')) {
+        contenedor.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
     }
 
     try {
@@ -99,29 +99,53 @@ async function cargarComentariosProfesor() {
 
             let htmlDudas = '<div class="row g-4 mt-1">';
             dudas.forEach(duda => {
+
+                // Lógica visual basada en si ya está respondido o no
+                let badgeEstado = '';
+                let clasesCard = '';
+                let formRespuesta = '';
+
+                if (duda.respondido > 0) {
+                    // YA RESPONDIDO: Diseño atenuado y sin caja de texto
+                    badgeEstado = '<span class="badge bg-success ms-2 small"><i class="bi bi-check2-all"></i> Respondido</span>';
+                    clasesCard = 'border-1 border-success opacity-75';
+                    formRespuesta = `<div class="mt-3 text-success small fw-bold"><i class="bi bi-check-circle"></i> Ya has respondido a esta duda.</div>`;
+                } else {
+                    // NUEVO: Diseño remarcado, llamativo y con caja para responder
+                    badgeEstado = '<span class="badge bg-danger ms-2 small"><i class="bi bi-bell-fill"></i> Nuevo</span>';
+                    clasesCard = 'border-2 border-primary shadow';
+                    formRespuesta = `
+                        <div class="mt-3 bg-light p-3 rounded border-start border-primary border-3">
+                            <label class="small fw-bold text-dark mb-1">Tu respuesta:</label>
+                            <textarea id="respuesta-${duda.id_comentario}" class="form-control form-control-sm mb-2" rows="2" placeholder="Escribe tu respuesta como profesor..."></textarea>
+                            <div class="text-end">
+                                <button onclick="responderDuda(${duda.id_video}, ${duda.id_comentario})" class="btn btn-sm btn-paideia">
+                                    <i class="bi bi-send me-1"></i> Enviar Respuesta
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 htmlDudas += `
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm">
+                        <div class="card ${clasesCard}">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-person-circle text-primary me-2"></i>${duda.alumno_nombre} ${duda.alumno_apellidos}</h6>
+                                    <h6 class="mb-0 fw-bold text-dark d-flex align-items-center">
+                                        <i class="bi bi-person-circle text-primary me-2"></i>
+                                        ${duda.alumno_nombre} ${duda.alumno_apellidos} 
+                                        ${badgeEstado}
+                                    </h6>
                                     <small class="text-muted">${duda.fecha}</small>
                                 </div>
                                 <div class="mb-3 small text-muted border-bottom pb-2">
                                     <i class="bi bi-book me-1"></i> Curso: <strong>${duda.curso_titulo}</strong> <br>
                                     <i class="bi bi-play-circle me-1"></i> Vídeo: <strong>${duda.video_titulo}</strong>
                                 </div>
-                                <p class="text-secondary">${duda.texto}</p>
+                                <p class="text-secondary fs-6">${duda.texto}</p>
                                 
-                                <div class="mt-3 bg-light p-3 rounded">
-                                    <label class="small fw-bold text-dark mb-1">Tu respuesta:</label>
-                                    <textarea id="respuesta-${duda.id_comentario}" class="form-control form-control-sm mb-2" rows="2" placeholder="Escribe tu respuesta como profesor..."></textarea>
-                                    <div class="text-end">
-                                        <button onclick="responderDuda(${duda.id_video}, ${duda.id_comentario})" class="btn btn-sm btn-paideia">
-                                            <i class="bi bi-send me-1"></i> Enviar Respuesta
-                                        </button>
-                                    </div>
-                                </div>
+                                ${formRespuesta}
                             </div>
                         </div>
                     </div>
@@ -152,15 +176,15 @@ async function responderDuda(idVideo, idPadre) {
             body: JSON.stringify({ id_video: idVideo, texto: texto, id_padre: idPadre })
         });
         const data = await res.json();
-        
+
         if (data.status === 'success') {
             alert("Respuesta enviada con éxito.");
-            textarea.value = ''; 
-            cargarComentariosProfesor(); 
+            textarea.value = '';
+            cargarComentariosProfesor();
         } else {
             alert(data.mensaje);
         }
-    } catch(err) {
+    } catch (err) {
         alert("Error de conexión al enviar la respuesta.");
     }
 }
