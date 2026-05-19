@@ -26,6 +26,15 @@ if ($metodo === 'GET') {
     } else {
         echo json_encode(["status" => "error", "mensaje" => "Falta el ID del vídeo."]);
     }
+} elseif ($metodo === 'PUT') {
+    $datos = json_decode(file_get_contents('php://input'), true);
+    
+    // Si la petición trae la palabra "reordenar", mandamos el array al reorden. Si no, es una edición normal.
+    if (isset($datos['accion']) && $datos['accion'] === 'reordenar') {
+        echo json_encode($controlador->procesarReorden($datos));
+    } else {
+        echo json_encode($controlador->procesarEdicion($datos));
+    }
 } else {
     echo json_encode(["status" => "error", "mensaje" => "Método no permitido"]);
 }
