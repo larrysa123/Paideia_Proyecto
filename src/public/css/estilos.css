@@ -38,6 +38,21 @@ h6,
     background-color: var(--color-primary) !important;
 }
 
+/* Altura total de la barra de navegación */
+.navbar.bg-paideia {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Posición del logo*/
+.logo-navbar {
+    height: 100px;         
+    width: auto;
+    margin-top: -15px;    
+    margin-bottom: -15px; 
+    margin-right: -25px;          
+    padding-top: 8px;    
+}
 .navbar-brand {
     color: white !important;
 }

@@ -27,7 +27,10 @@ require_once __DIR__ . '/../../../app/config/config.php';
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-paideia">
         <div class="container">
-            <a class="navbar-brand fw-bold fs-3" href="<?= RUTA_INICIO ?>">Paideia</a>
+            <a class="navbar-brand fw-bold fs-3 d-flex align-items-center" href="<?= RUTA_INICIO ?>">
+                <img src="<?= BASE_URL ?>public/assets/img/logo.png" alt="Logo Paideía" class="logo-navbar">
+                Paideía
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
