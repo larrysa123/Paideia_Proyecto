@@ -2,7 +2,7 @@
 class ForoController
 {
 
-    // --- COMENTARIOS ---
+    // COMENTARIOS 
     public function cargarForoVideo($id_video)
     {
         $modelo = new ForoVideo();
@@ -26,7 +26,7 @@ class ForoController
         return ["status" => "error", "mensaje" => "Faltan datos."];
     }
 
-    // --- VALORACIONES ---
+    // VALORACIONES
     public function cargarMiValoracionVideo($id_video)
     {
         if (!isset($_SESSION['user'])) return ["status" => "error", "mensaje" => "No logueado."];
@@ -52,7 +52,7 @@ class ForoController
         return ["status" => "error", "mensaje" => "Faltan datos."];
     }
 
-    // --- NUEVO: CARGAR BANDEJA DE ENTRADA DEL PROFESOR ---
+    // CARGAR BANDEJA DE ENTRADA DEL PROFESOR 
     public function cargarComentariosProfesor()
     {
         if (!isset($_SESSION['user']) || $_SESSION['user']['id_rol'] != 2) {
@@ -62,5 +62,26 @@ class ForoController
         $modelo = new ForoVideo();
         $datos = $modelo->obtenerComentariosPorProfesor($_SESSION['user']['id_usuario']);
         return ["status" => "success", "data" => $datos];
+    }
+
+    // ELIMINAR COMENTARIO 
+    public function procesarEliminarComentario($datos)
+    {
+        // Comprobamos que haya sesión iniciada
+        if (!isset($_SESSION['user'])) {
+            return ["status" => "error", "mensaje" => "No tienes sesión iniciada."];
+        }
+
+        if (isset($datos['id_comentario'])) {
+            $modelo = new ForoVideo();
+            $exito = $modelo->eliminarComentario($datos['id_comentario'], $_SESSION['user']['id_usuario']);
+
+            if ($exito) {
+                return ["status" => "success", "mensaje" => "Comentario eliminado."];
+            } else {
+                return ["status" => "error", "mensaje" => "Denegado por la Base de Datos (quizá no te pertenece)."];
+            }
+        }
+        return ["status" => "error", "mensaje" => "Falta el ID del comentario."];
     }
 }

@@ -99,27 +99,81 @@ class ForoVideo
         }
     }
 
-   // PANEL DEL PROFESOR (ACTUALIZADA CON ESTADOS) 
+    // PANEL DEL PROFESOR
     public function obtenerComentariosPorProfesor($id_profesor)
     {
-        // Buscamos los comentarios principales y contamos si el profesor ya ha respondido
         $query = "SELECT cv.id_comentario, cv.texto, cv.fecha, cv.id_video,
                          u.nombre as alumno_nombre, u.apellidos as alumno_apellidos, 
-                         v.titulo as video_titulo, c.titulo as curso_titulo,
-                         (SELECT COUNT(id_comentario) FROM Comentario_Video 
-                          WHERE id_padre = cv.id_comentario AND id_usuario = ?) as respondido
+                         v.titulo as video_titulo, c.titulo as curso_titulo
                   FROM Comentario_Video cv
                   JOIN Usuario u ON cv.id_usuario = u.id_usuario
                   JOIN Video v ON cv.id_video = v.id_video
                   JOIN Curso c ON v.id_curso = c.id_curso
                   WHERE c.id_profesor = ? AND cv.id_padre IS NULL
-                  ORDER BY respondido ASC, cv.fecha DESC";
-                  
+                  ORDER BY cv.fecha DESC";
         $stmt = $this->db->prepare($query);
-        // Le pasamos el ID dos veces: una para el SELECT (contar respuestas) y otra para el WHERE
-        $stmt->execute([$id_profesor, $id_profesor]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute([$id_profesor]);
+        $padres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($padres as &$padre) {
+            $qResp = "SELECT cv.id_comentario, cv.texto, cv.fecha, cv.id_usuario, u.nombre, u.apellidos, r.nombre_rol
+                      FROM Comentario_Video cv
+                      JOIN Usuario u ON cv.id_usuario = u.id_usuario
+                      JOIN Rol r ON u.id_rol = r.id_rol
+                      WHERE cv.id_padre = ?
+                      ORDER BY cv.fecha ASC";
+            $stmtResp = $this->db->prepare($qResp);
+            $stmtResp->execute([$padre['id_comentario']]);
+            $respuestas = $stmtResp->fetchAll(PDO::FETCH_ASSOC);
+
+            $padre['respuestas'] = $respuestas;
+            $padre['requiere_atencion'] = true; // Por defecto, roja
+
+            if (count($respuestas) > 0) {
+                $ultima_respuesta = end($respuestas);
+                // SOLUCIÓN AL CARTEL ROJO: Pasamos a minúsculas para que coincida siempre
+                if (strtolower($ultima_respuesta['nombre_rol']) === 'profesor') {
+                    $padre['requiere_atencion'] = false; // El profe contestó lo último, verde
+                }
+            }
+        }
+
+        usort($padres, function ($a, $b) {
+            if ($a['requiere_atencion'] == $b['requiere_atencion']) {
+                return strtotime($b['fecha']) - strtotime($a['fecha']);
+            }
+            return $a['requiere_atencion'] ? -1 : 1;
+        });
+
+        return $padres;
     }
 
-    
+    // FUNCIÓN PARA ELIMINAR COMENTARIOS 
+    public function eliminarComentario($id_comentario, $id_profesor)
+    {
+        try {
+            // 1. Verificamos si el comentario (o su padre) pertenece a un curso de este profesor.
+            $queryVerificar = "SELECT cv.id_comentario 
+                               FROM Comentario_Video cv
+                               LEFT JOIN Comentario_Video padre ON cv.id_padre = padre.id_comentario
+                               JOIN Video v ON v.id_video = COALESCE(cv.id_video, padre.id_video)
+                               JOIN Curso c ON v.id_curso = c.id_curso
+                               WHERE cv.id_comentario = ? AND c.id_profesor = ?";
+            
+            $stmtVer = $this->db->prepare($queryVerificar);
+            $stmtVer->execute([$id_comentario, $id_profesor]);
+            
+            if ($stmtVer->rowCount() > 0) {
+                // Es suyo. Borramos primero las respuestas y luego el comentario.
+                $stmtHijos = $this->db->prepare("DELETE FROM Comentario_Video WHERE id_padre = ?");
+                $stmtHijos->execute([$id_comentario]);
+                
+                $stmtBorrar = $this->db->prepare("DELETE FROM Comentario_Video WHERE id_comentario = ?");
+                return $stmtBorrar->execute([$id_comentario]);
+            }
+            return false; 
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }

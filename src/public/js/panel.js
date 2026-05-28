@@ -100,50 +100,82 @@ async function cargarComentariosProfesor() {
             let htmlDudas = '<div class="row g-4 mt-1">';
             dudas.forEach(duda => {
 
-                // Lógica visual basada en si ya está respondido o no
+                // 1. Comprobamos si requiere atención (Cartel Rojo) o no (Cartel Verde)
                 let badgeEstado = '';
                 let clasesCard = '';
                 let formRespuesta = '';
 
-                if (duda.respondido > 0) {
-                    // YA RESPONDIDO: Diseño atenuado y sin caja de texto
-                    badgeEstado = '<span class="badge bg-success ms-2 small"><i class="bi bi-check2-all"></i> Respondido</span>';
+                if (!duda.requiere_atencion) {
+                    badgeEstado = '<span class="badge bg-success ms-2 small"><i class="bi bi-check2-all"></i> Al día</span>';
                     clasesCard = 'border-1 border-success opacity-75';
-                    formRespuesta = `<div class="mt-3 text-success small fw-bold"><i class="bi bi-check-circle"></i> Ya has respondido a esta duda.</div>`;
                 } else {
-                    // NUEVO: Diseño remarcado, llamativo y con caja para responder
-                    badgeEstado = '<span class="badge bg-danger ms-2 small"><i class="bi bi-bell-fill"></i> Nuevo</span>';
+                    badgeEstado = '<span class="badge bg-danger ms-2 small"><i class="bi bi-bell-fill"></i> Requiere Atención</span>';
                     clasesCard = 'border-2 border-primary shadow';
-                    formRespuesta = `
-                        <div class="mt-3 bg-light p-3 rounded border-start border-primary border-3">
-                            <label class="small fw-bold text-dark mb-1">Tu respuesta:</label>
-                            <textarea id="respuesta-${duda.id_comentario}" class="form-control form-control-sm mb-2" rows="2" placeholder="Escribe tu respuesta como profesor..."></textarea>
-                            <div class="text-end">
-                                <button onclick="responderDuda(${duda.id_video}, ${duda.id_comentario})" class="btn btn-sm btn-paideia">
-                                    <i class="bi bi-send me-1"></i> Enviar Respuesta
-                                </button>
-                            </div>
-                        </div>
-                    `;
                 }
 
+                // 2. Construimos el historial de conversación si hay respuestas
+                let htmlHistorial = '';
+                let btnHistorial = '';
+                if (duda.respuestas && duda.respuestas.length > 0) {
+                    btnHistorial = `<button onclick="document.getElementById('historial-${duda.id_comentario}').classList.toggle('d-none')" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-clock-history"></i> Historial (${duda.respuestas.length})</button>`;
+                    
+                    htmlHistorial = `<div class="mt-3 p-3 bg-light border border-secondary rounded d-none" id="historial-${duda.id_comentario}">
+                        <h6 class="border-bottom pb-2 mb-3 text-muted small fw-bold">Historial de la conversación:</h6>`;
+                    
+                    duda.respuestas.forEach(res => {
+                        const esProfe = res.nombre_rol === 'Profesor';
+                        const colorBg = esProfe ? 'bg-white border-start border-3 border-success' : 'bg-white border-start border-3 border-primary';
+                        htmlHistorial += `
+                            <div class="mb-2 p-2 rounded shadow-sm ${colorBg} d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong class="small text-dark">${res.nombre} ${res.apellidos}</strong> <span class="badge ${esProfe ? 'bg-success' : 'bg-primary'} small" style="font-size: 0.65rem;">${res.nombre_rol}</span>
+                                    <p class="mb-0 small text-secondary mt-1">${res.texto}</p>
+                                </div>
+                                <div class="text-end ms-2">
+                                    <button onclick="eliminarComentarioForo(${res.id_comentario})" class="btn btn-sm text-danger p-0 m-0" title="Eliminar mensaje"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </div>`;
+                    });
+                    htmlHistorial += `</div>`;
+                }
+
+                // 3. Montamos la caja para que el profesor responda
+                formRespuesta = `
+                    <div class="mt-3 bg-light p-3 rounded border-start border-primary border-3">
+                        <textarea id="respuesta-${duda.id_comentario}" class="form-control form-control-sm mb-2" rows="2" placeholder="Escribe tu respuesta..."></textarea>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                ${btnHistorial}
+                            </div>
+                            <button onclick="responderDuda(${duda.id_video}, ${duda.id_comentario})" class="btn btn-sm btn-paideia">
+                                <i class="bi bi-send me-1"></i> Enviar
+                            </button>
+                        </div>
+                        ${htmlHistorial}
+                    </div>
+                `;
+
+                // 4. Inyectamos la tarjeta completa
                 htmlDudas += `
                     <div class="col-12">
                         <div class="card ${clasesCard}">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="mb-0 fw-bold text-dark d-flex align-items-center">
                                         <i class="bi bi-person-circle text-primary me-2"></i>
                                         ${duda.alumno_nombre} ${duda.alumno_apellidos} 
                                         ${badgeEstado}
                                     </h6>
-                                    <small class="text-muted">${duda.fecha}</small>
+                                    <div class="text-end">
+                                        <small class="text-muted d-block">${duda.fecha}</small>
+                                        <button onclick="eliminarComentarioForo(${duda.id_comentario})" class="btn btn-sm text-danger p-0 mt-1" title="Eliminar hilo completo"><i class="bi bi-trash"></i> Borrar Hilo</button>
+                                    </div>
                                 </div>
                                 <div class="mb-3 small text-muted border-bottom pb-2">
                                     <i class="bi bi-book me-1"></i> Curso: <strong>${duda.curso_titulo}</strong> <br>
                                     <i class="bi bi-play-circle me-1"></i> Vídeo: <strong>${duda.video_titulo}</strong>
                                 </div>
-                                <p class="text-secondary fs-6">${duda.texto}</p>
+                                <p class="text-secondary fs-6 fw-bold">Pregunta original: <span class="fw-normal">${duda.texto}</span></p>
                                 
                                 ${formRespuesta}
                             </div>
@@ -209,6 +241,28 @@ async function eliminarCurso(id) {
             }
         } catch (error) {
             alert("Hubo un error de conexión al intentar eliminar el curso.");
+        }
+    }
+}
+
+// Función para eliminar un comentario 
+async function eliminarComentarioForo(idComentario) {
+    if (confirm("¿Estás seguro de que quieres eliminar este mensaje? Si es la duda principal, se borrará todo el hilo.")) {
+        try {
+            const res = await fetch(BASE_URL + 'app/api/foro_video.php', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_comentario: idComentario })
+            });
+            const data = await res.json();
+            
+            if (data.status === 'success') {
+                cargarComentariosProfesor(); // Recargamos la bandeja y los carteles
+            } else {
+                alert(data.mensaje);
+            }
+        } catch (err) {
+            alert("Error al intentar eliminar el comentario.");
         }
     }
 }

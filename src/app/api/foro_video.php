@@ -21,7 +21,6 @@ if ($metodo === 'GET') {
         echo json_encode(["status" => "error", "mensaje" => "Faltan parámetros."]);
     }
 } elseif ($metodo === 'POST') {
-    // ... (El bloque POST se queda exactamente igual que lo tenías)
     $datos = json_decode(file_get_contents('php://input'), true);
     
     if (isset($datos['accion']) && $datos['accion'] == 'valorar') {
@@ -29,6 +28,9 @@ if ($metodo === 'GET') {
     } else {
         echo json_encode($controlador->procesarComentario($datos));
     }
+} elseif ($metodo === 'DELETE') {
+    $datos = json_decode(file_get_contents('php://input'), true);
+    echo json_encode($controlador->procesarEliminarComentario($datos));
 } else {
     echo json_encode(["status" => "error", "mensaje" => "Método no permitido"]);
 }
