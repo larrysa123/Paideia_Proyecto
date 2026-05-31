@@ -11,8 +11,8 @@ require_once __DIR__ . '/../includes/header.php';
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
 <div class="container py-5">
-    <a href="panel.php" class="btn btn-outline-secondary mb-4">
-        <i class="bi bi-arrow-left"></i> Volver al Panel
+    <a href="panel.php" class="btn-volver mb-4">
+        <i class="bi bi-arrow-left me-2"></i> Volver al Panel
     </a>
 
     <h2 class="fw-bold mb-4">Gestionar Temario del Curso</h2>

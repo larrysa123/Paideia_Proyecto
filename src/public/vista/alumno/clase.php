@@ -18,8 +18,8 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="container-fluid py-4 pantalla-clase-contenedor">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <a href="mis_cursos.php" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-arrow-left"></i> Volver a Mis Cursos
+            <a href="mis_cursos.php" class="btn-volver">
+                <i class="bi bi-arrow-left me-2"></i> Volver a Mis Cursos
             </a>
             <button type="button" class="btn btn-warning btn-sm fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalValoracion">
                 <i class="bi bi-star-fill text-dark"></i> Valorar Curso Completo

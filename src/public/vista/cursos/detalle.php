@@ -3,8 +3,8 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container py-5">
-    <a href="<?= RUTA_INICIO ?>" class="btn btn-outline-secondary mb-4">
-        <i class="bi bi-arrow-left"></i> Volver a Cursos
+    <a href="<?= RUTA_INICIO ?>" class="btn-volver mb-4">
+        <i class="bi bi-arrow-left me-2"></i> Volver a Cursos
     </a>
 
     <div id="cargando-detalle" class="text-center py-5">
