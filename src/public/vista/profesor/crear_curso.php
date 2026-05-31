@@ -50,7 +50,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <label for="precio" class="form-label form-label-paideia">Precio (€) *</label>
                             <div class="input-group">
                                 <input type="number" class="form-control" id="precio" name="precio" required
-                                    placeholder="0.00" step="1.00" min="0">
+                                    placeholder="0.00" step="0.01" min="0">
                                 <span class="input-group-text">€</span>
                             </div>
                         </div>

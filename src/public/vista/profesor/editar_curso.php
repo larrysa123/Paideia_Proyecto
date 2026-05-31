@@ -23,8 +23,8 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="col-md-8">
 
             <div class="contenedor-form">
-                <h3 class="titulo-form-paideia text-center mb-4">
-                    Crear Nuevo Curso
+                <h3 id="titulo-pagina-editar" class="titulo-form-paideia text-center mb-4">
+                    Cargando curso...
                 </h3>
 
                 <p class="text-muted text-center mb-4 card-desc-panel">
@@ -50,7 +50,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <label for="precio" class="form-label form-label-paideia">Precio (€) *</label>
                             <div class="input-group">
                                 <input type="number" class="form-control" id="precio" name="precio" required
-                                    placeholder="0.00" step="1.00" min="0">
+                                    placeholder="0.00" step="0.01" min="0">
                                 <span class="input-group-text">€</span>
                             </div>
                         </div>
@@ -67,7 +67,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                     <div class="d-grid mt-4">
                         <button type="submit" class="btn btn-paideia py-2 fs-5">
-                            <i class="bi bi-save me-2"></i> Guardar y Publicar Curso
+                            <i class="bi bi-save me-2"></i> Actualizar Curso
                         </button>
                     </div>
                     <input type="hidden" id="id_curso" name="id_curso">
@@ -80,3 +80,4 @@ require_once __DIR__ . '/../includes/header.php';
         <?php
         // require_once __DIR__ . '/../includes/footer.php'; 
         ?>
+</div>

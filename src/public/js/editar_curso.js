@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         if (resultado.status === 'success') {
             const curso = resultado.data;
+
+            // Actualizamos el título de la página dinámicamente con el nombre del curso
+            document.getElementById('titulo-pagina-editar').innerText = 'Editando: ' + curso.titulo;
+
             // Rellenamos el formulario con lo que hay en la BD
             document.getElementById('id_curso').value = curso.id_curso;
             document.getElementById('titulo').value = curso.titulo;
