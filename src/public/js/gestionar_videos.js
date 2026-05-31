@@ -44,16 +44,16 @@ document.addEventListener('DOMContentLoaded', function () {
             let res, resultado;
 
             if (idVideoEditar) {
-                // MODO EDICIÓN (PUT)
+                // MODO EDICIÓN (PUT) - Ruta corregida
                 datosVideo.id_video = idVideoEditar;
-                res = await fetch(BASE_URL + 'app/api/videos.php', {
+                res = await fetch('/api/videos.php', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(datosVideo)
                 });
             } else {
-                // MODO CREACIÓN (POST)
-                res = await fetch(BASE_URL + 'app/api/videos.php', {
+                // MODO CREACIÓN (POST) - Ruta corregida
+                res = await fetch('/api/videos.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(datosVideo)
@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', function () {
 // =========================================================
 async function cargarVideos(idCurso) {
     try {
-        const res = await fetch(BASE_URL + 'app/api/videos.php?id_curso=' + idCurso);
+        // Ruta corregida al Alias
+        const res = await fetch('/api/videos.php?id_curso=' + idCurso);
         const resultado = await res.json();
 
         document.getElementById('cargando-videos').classList.add('d-none');
@@ -92,7 +93,6 @@ async function cargarVideos(idCurso) {
 
         if (resultado.status === 'success' && resultado.data.length > 0) {
             resultado.data.forEach(video => {
-                // Escapamos comillas para evitar que rompan el onclick
                 const tituloSeguro = video.titulo.replace(/'/g, "\\'");
 
                 lista.innerHTML += `
@@ -120,11 +120,10 @@ async function cargarVideos(idCurso) {
                 `;
             });
 
-            // Inicializamos SortableJS para el Drag & Drop
-            if (sortableInstance) sortableInstance.destroy(); // Destruimos el anterior si recargamos
+            if (sortableInstance) sortableInstance.destroy();
 
             sortableInstance = new Sortable(lista, {
-                handle: '.drag-handle', // Solo se arrastra desde los puntitos
+                handle: '.drag-handle',
                 animation: 150,
                 ghostClass: 'bg-light',
                 onEnd: function () {
@@ -147,7 +146,6 @@ async function actualizarOrdenBackend(idCurso) {
     const elementos = document.querySelectorAll('#lista-videos li');
     let nuevoOrdenArray = [];
 
-    // Cambiamos visualmente las etiquetas "Lec. X" y preparamos el paquete de datos
     elementos.forEach((li, index) => {
         const nuevoNum = index + 1;
         li.querySelector('.num-leccion').innerText = `Lec. ${nuevoNum}`;
@@ -159,8 +157,8 @@ async function actualizarOrdenBackend(idCurso) {
     });
 
     try {
-        // Mandamos el array al servidor en silencio
-        await fetch(BASE_URL + 'app/api/videos.php', {
+        // Ruta corregida al Alias
+        await fetch('/api/videos.php', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ accion: 'reordenar', orden_videos: nuevoOrdenArray })
@@ -195,7 +193,8 @@ function cancelarEdicion() {
 async function eliminarVideo(idVideo, idCurso) {
     if (confirm('¿Seguro que quieres borrar esta lección? Se perderán también las dudas del foro asociadas.')) {
         try {
-            const res = await fetch(BASE_URL + 'app/api/videos.php?id=' + idVideo, { method: 'DELETE' });
+            // Ruta corregida al Alias
+            const res = await fetch('/api/videos.php?id=' + idVideo, { method: 'DELETE' });
             const resultado = await res.json();
             if (resultado.status === 'success') {
                 cargarVideos(idCurso);

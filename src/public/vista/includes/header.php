@@ -28,7 +28,7 @@ require_once __DIR__ . '/../../../app/config/config.php';
     <nav class="navbar navbar-expand-lg navbar-dark bg-paideia">
         <div class="container">
             <a class="navbar-brand fw-bold fs-3 d-flex align-items-center" href="<?= RUTA_INICIO ?>">
-                <img src="<?= BASE_URL ?>public/assets/img/logo-dorado.png" alt="Logo Paideía" class="logo-navbar">
+                <img src="<?= RUTA_IMAGENES ?>logo-blanco.png" alt="Logo Paideía" class="logo-navbar">
                 <span class="texto-marca">Paideía</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -68,7 +68,7 @@ require_once __DIR__ . '/../../../app/config/config.php';
                             </span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-outline-light ms-2 px-3" href="<?= BASE_URL ?>app/api/logout.php">
+                            <a class="nav-link btn btn-outline-light ms-2 px-3" href="/api/logout.php">
                                 Cerrar sesión
                             </a>
                         </li>

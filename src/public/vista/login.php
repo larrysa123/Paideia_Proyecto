@@ -34,4 +34,4 @@
     </div>
 </div>
 
-<script src="<?= RUTA_JS ?>login.js"></script>
+<script src="<?= RUTA_JS ?>login.js?v=<?= time() ?>"></script>

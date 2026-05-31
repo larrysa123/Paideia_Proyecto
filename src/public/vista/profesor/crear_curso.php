@@ -73,7 +73,7 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
-        <script src="<?= RUTA_JS ?>crear_curso.js"></script>
+        <script src="<?= RUTA_JS ?>crear_curso.js?v=<?= time() ?>"></script>
         <?php
         // require_once __DIR__ . '/../includes/footer.php'; 
         ?>

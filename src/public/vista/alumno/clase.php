@@ -121,7 +121,7 @@ require_once __DIR__ . '/../includes/header.php';
 <input type="hidden" id="id_curso_oculto" value="<?= htmlspecialchars($id_curso) ?>">
 <input type="hidden" id="id_video_actual" value="">
 
-<script src="<?= RUTA_JS ?>clase.js"></script>
+<script src="<?= RUTA_JS ?>clase.js?v=<?= time() ?>"></script>
 
 <?php
 // require_once __DIR__ . '/../includes/footer.php'; 

@@ -1,10 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const formularioCrear = document.getElementById('formCrearCurso');
 
     if (formularioCrear) {
-        formularioCrear.addEventListener('submit', async function(evento) {
-            evento.preventDefault(); 
-            
+        formularioCrear.addEventListener('submit', async function (evento) {
+            evento.preventDefault();
+
             // Creamos un objeto FormData para poder adjuntar archivos físicos
             const datosFormulario = new FormData(formularioCrear);
 
@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 // Al usar FormData NO enviamos el header Content-Type, el navegador lo calcula solo
-                const respuesta = await fetch(BASE_URL + 'app/api/cursos.php', {
+                // ¡Ruta corregida apuntando al Alias de Apache!
+                const respuesta = await fetch('/api/cursos.php', {
                     method: 'POST',
                     body: datosFormulario
                 });
@@ -25,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (datos.status === 'success') {
                     alert(datos.mensaje);
-                    window.location.href = 'panel.php'; 
+                    window.location.href = 'panel.php';
                 } else {
                     alert("Error: " + datos.mensaje);
                 }

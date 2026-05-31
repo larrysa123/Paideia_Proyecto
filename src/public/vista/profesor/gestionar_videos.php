@@ -62,4 +62,4 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<script src="<?= RUTA_JS ?>gestionar_videos.js"></script>
+<script src="<?= RUTA_JS ?>gestionar_videos.js?v=<?= time() ?>"></script>

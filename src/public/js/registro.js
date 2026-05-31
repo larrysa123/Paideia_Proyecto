@@ -10,30 +10,32 @@ document.getElementById('formRegistro').addEventListener('submit', async functio
     };
 
     try {
-        // 2. Enviamos el paquete completo a la API
-        const respuesta = await fetch(BASE_URL + 'app/api/registro.php', {
+        // 2. Enviamos el paquete completo a la API (Ruta corregida al Alias)
+        const respuesta = await fetch('/api/registro.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(datosUsuario) // Convertimos el objeto a texto JSON
+            body: JSON.stringify(datosUsuario) 
         });
 
         // 3. Leemos lo que nos devuelve el servidor
         const datos = await respuesta.json();
 
-        // 4. Mostramos el mensaje y cambiamos el color según si ha ido bien o mal
+        // 4. Mostramos el mensaje y cambiamos el color
         const parrafoRespuesta = document.getElementById('respuestaServidor');
         parrafoRespuesta.innerText = datos.mensaje;
         
         if (datos.status === 'success') {
             parrafoRespuesta.style.color = 'green';
-            // Aquí en el futuro podríamos redirigir al login: window.location.href = 'login.php';
+            // Opcional: Redirigir tras éxito
+            // setTimeout(() => { window.location.href = '/login.php'; }, 1000);
         } else {
             parrafoRespuesta.style.color = 'red';
         }
 
     } catch (error) {
         console.error("Hubo un error de conexión:", error);
+        document.getElementById('respuestaServidor').innerText = "Error de conexión con el servidor.";
     }
 });

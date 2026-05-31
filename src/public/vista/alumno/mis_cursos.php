@@ -109,7 +109,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <input type="hidden" id="modal_id_curso_oculto" value="">
 
-<script src="<?= RUTA_JS ?>mis_cursos.js"></script>
+<script src="<?= RUTA_JS ?>mis_cursos.js?v=<?= time() ?>"></script>
 
 <?php
 // require_once __DIR__ . '/../includes/footer.php'; 

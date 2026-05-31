@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Escuchar el envío del formulario de edición de usuario
     const formEditar = document.getElementById('form-editar-usuario');
     if (formEditar) {
-        formEditar.addEventListener('submit', async function(e) {
+        formEditar.addEventListener('submit', async function (e) {
             e.preventDefault();
             await procesarGuardarUsuario();
         });
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 async function cargarDashboardAdmin() {
     try {
-        const respuesta = await fetch(BASE_URL + 'app/api/admin.php?accion=dashboard');
+        const respuesta = await fetch('/api/admin.php?accion=dashboard');
         const resultado = await respuesta.json();
 
         if (resultado.status === 'success') {
@@ -64,7 +64,7 @@ async function cargarDashboardAdmin() {
             } else {
                 cursos.forEach(c => {
                     let badgeEstado = c.estado === 'publicado' ? 'bg-success' : 'bg-warning text-dark';
-                    
+
                     let btnModeracion = '';
                     if (c.estado === 'pendiente') {
                         btnModeracion = `<button class="btn btn-sm btn-success me-1" onclick="cambiarEstadoCurso(${c.id_curso}, 'publicado')" title="Aprobar y Publicar"><i class="bi bi-check-circle"></i> Aprobar</button>`;
@@ -104,12 +104,12 @@ async function cargarDashboardAdmin() {
 // =========================================================
 async function abrirModalEditarUsuario(id) {
     try {
-        const respuesta = await fetch(BASE_URL + 'app/api/admin.php?accion=detalle_usuario&id=' + id);
+        const respuesta = await fetch('/api/admin.php?accion=detalle_usuario&id=' + id);
         const resultado = await respuesta.json();
-        
+
         if (resultado.status === 'success') {
             const u = resultado.data;
-            
+
             // Precargamos los campos del modal
             document.getElementById('edit-id-usuario').value = u.id_usuario;
             document.getElementById('edit-nombre').value = u.nombre;
@@ -117,7 +117,7 @@ async function abrirModalEditarUsuario(id) {
             document.getElementById('edit-email').value = u.email;
             document.getElementById('edit-rol').value = u.id_rol;
             document.getElementById('edit-password').value = ''; // Limpio por seguridad
-            
+
             const modalEl = document.getElementById('modalEditarUsuario');
             modalEditarInstance = new bootstrap.Modal(modalEl);
             modalEditarInstance.show();
@@ -138,7 +138,7 @@ async function procesarGuardarUsuario() {
     const password = document.getElementById('edit-password').value;
 
     try {
-        const respuesta = await fetch(BASE_URL + 'app/api/admin.php', {
+        const respuesta = await fetch('/api/admin.php', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -152,7 +152,7 @@ async function procesarGuardarUsuario() {
             })
         });
         const resultado = await respuesta.json();
-        
+
         if (resultado.status === 'success') {
             if (modalEditarInstance) modalEditarInstance.hide();
             alert(resultado.mensaje);
@@ -171,7 +171,7 @@ async function procesarGuardarUsuario() {
 async function cambiarEstadoCurso(id, nuevoEstado) {
     document.body.style.cursor = 'wait';
     try {
-        const respuesta = await fetch(BASE_URL + 'app/api/admin.php', {
+        const respuesta = await fetch('/api/admin.php', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ accion: 'cambiar_estado', id_curso: id, estado: nuevoEstado })
@@ -189,7 +189,7 @@ async function cambiarEstadoCurso(id, nuevoEstado) {
 async function eliminarUsuario(id) {
     if (confirm('¿Estás seguro de que quieres eliminar a este usuario? Esta acción es irreversible y borrará sus datos.')) {
         try {
-            const respuesta = await fetch(BASE_URL + 'app/api/admin.php?tipo=usuario&id=' + id, { method: 'DELETE' });
+            const respuesta = await fetch('/api/admin.php?tipo=usuario&id=' + id, { method: 'DELETE' });
             const resultado = await respuesta.json();
             alert(resultado.mensaje);
             if (resultado.status === 'success') cargarDashboardAdmin();
@@ -202,7 +202,7 @@ async function eliminarUsuario(id) {
 async function eliminarCurso(id) {
     if (confirm('¿Estás seguro de que quieres eliminar este curso globalmente? Se borrará todo su contenido y matrículas.')) {
         try {
-            const respuesta = await fetch(BASE_URL + 'app/api/admin.php?tipo=curso&id=' + id, { method: 'DELETE' });
+            const respuesta = await fetch('/api/admin.php?tipo=curso&id=' + id, { method: 'DELETE' });
             const resultado = await respuesta.json();
             alert(resultado.mensaje);
             if (resultado.status === 'success') cargarDashboardAdmin();

@@ -21,26 +21,5 @@ class UsuarioController {
         }
     }
 
-    /*
-    
-    public function perfil($id) {
-        $usuarioModel = new Usuario();
-        // Crear la función getById() en el modelo más adelante
-        $usuario = $usuarioModel->getById($id);
-        
-        
-        require __DIR__ . '/../../public/vista/usuario/perfil.php';
-    }
-
-    public function actualizar($data) {
-        $usuarioModel = new Usuario();
-        // Crear la función update() en el modelo más adelante
-        $usuarioModel->update($data);
-        
-        
-        header("Location: /public/vista/usuario/perfil.php");
-    }
-
-    */
 }
 ?>

@@ -40,7 +40,7 @@ class AuthController {
     public function logout() {
         session_destroy();
         // Asegúrate de que esta ruta coincida con tu constante BASE_URL si la cambias
-        header("Location: /PAIDEIA_PROYECTO/src/public/index.php"); 
+        header("Location: /index.php");
         exit();
     }
 }

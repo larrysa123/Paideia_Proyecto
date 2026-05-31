@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', async function () {
     // 1. CARGAR TARJETAS DE CURSOS
     try {
-        const respuesta = await fetch(BASE_URL + 'app/api/inscripciones.php');
+        // Ruta corregida al Alias
+        const respuesta = await fetch('/api/inscripciones.php');
         const resultado = await respuesta.json();
 
         const spinner = document.getElementById('cargando-mis-cursos');
@@ -111,7 +112,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             pintarEstrellasModal(0);
 
             try {
-                const res = await fetch(BASE_URL + 'app/api/valoraciones.php?id_curso=' + idCurso + '&accion=miresena');
+                // Ruta corregida al Alias
+                const res = await fetch('/api/valoraciones.php?id_curso=' + idCurso + '&accion=miresena');
                 const json = await res.json();
                 if (json.status === 'success' && json.data) {
                     textoComentario.value = json.data.texto || '';
@@ -153,7 +155,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             btnGuardar.innerText = "Guardando...";
 
             try {
-                const res = await fetch(BASE_URL + 'app/api/valoraciones.php', {
+                // Ruta corregida al Alias
+                const res = await fetch('/api/valoraciones.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id_curso: idCurso, estrellas: puntuacion, texto: texto })
@@ -179,14 +182,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     // =========================================================
     const tabHistorial = document.getElementById('historial-tab');
     if (tabHistorial) {
-        tabHistorial.addEventListener('click', async function() {
+        tabHistorial.addEventListener('click', async function () {
             const tbody = document.getElementById('tabla-historial');
-            
-            // Si ya tiene contenido (y no es el loader), no volvemos a llamar a la BD
+
+            // Si ya tiene contenido, no volvemos a llamar a la BD
             if (tbody.children.length > 1 || !tbody.innerHTML.includes('spinner')) return;
 
             try {
-                const res = await fetch(BASE_URL + 'app/api/pedidos.php?accion=historial');
+                // Ruta corregida al Alias
+                const res = await fetch('/api/pedidos.php?accion=historial');
                 const json = await res.json();
 
                 if (json.status === 'success') {
@@ -199,9 +203,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     recibos.forEach(r => {
-                        // Formateamos el ID 
                         const idFormat = '#' + r.id_pedido.toString().padStart(4, '0');
-                        
+
                         tbody.innerHTML += `
                             <tr>
                                 <td class="text-muted fw-bold">${idFormat}</td>

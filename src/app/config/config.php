@@ -1,43 +1,39 @@
 <?php
-// Arrancamos el motor de sesiones (Tu control está perfecto)
+// Arrancamos el motor de sesiones
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// CARGAMOS LA BASE DE DATOS PARA TODO EL PROYECTO
+// CARGAMOS LA BASE DE DATOS
 require_once __DIR__ . '/db.php'; 
 
 // =================================================================
-// 1. CONSTANTES DE RUTAS (Para el Navegador / HTML)
+// 1. CONSTANTES DE RUTAS (Para el Navegador / Cloudflare)
 // =================================================================
 
-// Ruta absoluta y segura para PHP y JavaScript
-define('BASE_URL', 'http://localhost/PAIDEIA_PROYECTO/src/');
+// Usamos el dominio público para que las rutas funcionen vía Cloudflare
+define('BASE_URL', 'https://paideia.cloud/');
 
-// Tus rutas derivadas (¡Están perfectas!)
-define('RUTA_CSS', BASE_URL . 'public/css/');
-define('RUTA_JS', BASE_URL . 'public/js/');
-define('RUTA_VISTAS', BASE_URL . 'public/vista/');
-define('RUTA_INICIO', BASE_URL . 'public/index.php');
-
+// Definimos las rutas basadas en el dominio público
+define('RUTA_CSS', BASE_URL . 'css/');
+define('RUTA_JS', BASE_URL . 'js/');
+define('RUTA_VISTAS', BASE_URL . 'vista/');
+define('RUTA_IMAGENES', BASE_URL . 'assets/img/');
+define('RUTA_INICIO', BASE_URL . 'index.php');
 
 // =================================================================
-// 2. AUTOLOADER MÁGICO (Para el Servidor / PHP)
+// 2. AUTOLOADER (Para el Servidor / PHP)
 // =================================================================
 
 spl_autoload_register(function ($clase) {
-    // Definimos en qué carpetas están nuestras clases de PHP
-    // __DIR__ nos sitúa en src/app/config/
+    // Al usar ../ desde app/config/ bajamos a app/ y entramos directamente en modelo/ o controlador/
     $carpetas = [
-        __DIR__ . '/../modelo/',       // src/app/modelo/
-        __DIR__ . '/../controlador/'   // src/app/controlador/
+        __DIR__ . '/../modelo/',
+        __DIR__ . '/../controlador/'
     ];
 
-    // El Bibliotecario busca en cada carpeta
     foreach ($carpetas as $carpeta) {
         $archivo = $carpeta . $clase . '.php';
-        
-        // Si el archivo existe, le hace el require y termina de buscar
         if (file_exists($archivo)) {
             require_once $archivo;
             return;

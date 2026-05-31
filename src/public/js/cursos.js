@@ -1,10 +1,8 @@
-const API_URL = BASE_URL + 'app/api/cursos.php';
-
 async function cargarCursos() {
     const contenedor = document.getElementById('contenedor-cursos');
 
     try {
-        const respuesta = await fetch(API_URL);
+        const respuesta = await fetch('/api/cursos.php');
         if (!respuesta.ok) throw new Error('Error en la red');
 
         const resultado = await respuesta.json();

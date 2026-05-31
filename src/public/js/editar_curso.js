@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     // Obtener el ID del curso desde la URL (ej: editar_curso.php?id=5)
     const urlParams = new URLSearchParams(window.location.search);
     const idCurso = urlParams.get('id');
@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // FASE DE PRECARGA
     try {
-        const respuesta = await fetch(BASE_URL + 'app/api/cursos.php?id=' + idCurso);
+        // Ruta corregida al Alias de Apache
+        const respuesta = await fetch('/api/cursos.php?id=' + idCurso);
         const resultado = await respuesta.json();
 
         if (resultado.status === 'success') {
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.getElementById('titulo').value = curso.titulo;
             document.getElementById('descripcion').value = curso.descripcion;
             document.getElementById('precio').value = curso.precio;
-            
+
             // Mostramos el nombre de la imagen al profesor y lo guardamos en el input oculto
             document.getElementById('nombre_imagen_actual').innerText = curso.imagen ? curso.imagen : 'Ninguna';
             document.getElementById('imagen_actual').value = curso.imagen || '';
@@ -34,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // FASE DE GUARDADO
     const formulario = document.getElementById('formEditarCurso');
-    formulario.addEventListener('submit', async function(e) {
+    formulario.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         // Empaquetamos archivos y textos juntos
@@ -46,9 +47,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         btnSubmit.disabled = true;
 
         try {
-            // Usamos POST para que PHP pueda leer la foto nueva
-            const res = await fetch(BASE_URL + 'app/api/cursos.php', {
-                method: 'POST', 
+            // Usamos POST apuntando al Alias para que PHP procese el FormData con la imagen
+            const res = await fetch('/api/cursos.php', {
+                method: 'POST',
                 body: datosFormulario
             });
 

@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     cargarComentariosProfesor();
 
     // Escuchar cuando el profesor hace clic en la pestaña "Comentarios"
-    // (Opcional, para refrescar datos si el usuario hace clic, aunque ya estén cargados)
     const tabComentarios = document.getElementById('comentarios-tab');
     if (tabComentarios) {
         tabComentarios.addEventListener('click', cargarComentariosProfesor);
@@ -16,7 +15,8 @@ async function cargarMisCursos() {
     const tabCursos = document.getElementById('cursos-tab');
 
     try {
-        const respuesta = await fetch(BASE_URL + 'app/api/cursos.php?mis_cursos=true');
+        // RUTA LIMPIA
+        const respuesta = await fetch('/api/cursos.php?mis_cursos=true');
         const resultado = await respuesta.json();
 
         if (resultado.status === 'success') {
@@ -73,14 +73,13 @@ async function cargarComentariosProfesor() {
     const contenedor = document.getElementById('comentarios');
     const tabComentarios = document.getElementById('comentarios-tab');
 
-    // Solo mostramos el spinner si la pestaña está activa, para no dar un salto visual en el fondo
     if (tabComentarios.classList.contains('active')) {
         contenedor.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
     }
 
     try {
-        // Desactivamos la caché para forzar al navegador a traer las dudas nuevas en tiempo real.
-        const respuesta = await fetch(BASE_URL + 'app/api/foro_video.php?accion=mis_comentarios_profesor', { cache: 'no-store' });
+        // RUTA LIMPIA
+        const respuesta = await fetch('/api/foro_video.php?accion=mis_comentarios_profesor', { cache: 'no-store' });
         const resultado = await respuesta.json();
 
         if (resultado.status === 'success') {
@@ -99,8 +98,6 @@ async function cargarComentariosProfesor() {
 
             let htmlDudas = '<div class="row g-4 mt-1">';
             dudas.forEach(duda => {
-
-                // 1. Comprobamos si requiere atención (Cartel Rojo) o no (Cartel Verde)
                 let badgeEstado = '';
                 let clasesCard = '';
                 let formRespuesta = '';
@@ -113,15 +110,14 @@ async function cargarComentariosProfesor() {
                     clasesCard = 'border-2 border-primary shadow';
                 }
 
-                // 2. Construimos el historial de conversación si hay respuestas
                 let htmlHistorial = '';
                 let btnHistorial = '';
                 if (duda.respuestas && duda.respuestas.length > 0) {
                     btnHistorial = `<button onclick="document.getElementById('historial-${duda.id_comentario}').classList.toggle('d-none')" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-clock-history"></i> Historial (${duda.respuestas.length})</button>`;
-                    
+
                     htmlHistorial = `<div class="mt-3 p-3 bg-light border border-secondary rounded d-none" id="historial-${duda.id_comentario}">
                         <h6 class="border-bottom pb-2 mb-3 text-muted small fw-bold">Historial de la conversación:</h6>`;
-                    
+
                     duda.respuestas.forEach(res => {
                         const esProfe = res.nombre_rol === 'Profesor';
                         const colorBg = esProfe ? 'bg-white border-start border-3 border-success' : 'bg-white border-start border-3 border-primary';
@@ -139,7 +135,6 @@ async function cargarComentariosProfesor() {
                     htmlHistorial += `</div>`;
                 }
 
-                // 3. Montamos la caja para que el profesor responda
                 formRespuesta = `
                     <div class="mt-3 bg-light p-3 rounded border-start border-primary border-3">
                         <textarea id="respuesta-${duda.id_comentario}" class="form-control form-control-sm mb-2" rows="2" placeholder="Escribe tu respuesta..."></textarea>
@@ -155,7 +150,6 @@ async function cargarComentariosProfesor() {
                     </div>
                 `;
 
-                // 4. Inyectamos la tarjeta completa
                 htmlDudas += `
                     <div class="col-12">
                         <div class="card ${clasesCard}">
@@ -191,7 +185,6 @@ async function cargarComentariosProfesor() {
     }
 }
 
-// Función que ejecuta el botón de enviar respuesta
 async function responderDuda(idVideo, idPadre) {
     const textarea = document.getElementById(`respuesta-${idPadre}`);
     const texto = textarea.value.trim();
@@ -202,7 +195,8 @@ async function responderDuda(idVideo, idPadre) {
     }
 
     try {
-        const res = await fetch(BASE_URL + 'app/api/foro_video.php', {
+        // RUTA LIMPIA
+        const res = await fetch('/api/foro_video.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_video: idVideo, texto: texto, id_padre: idPadre })
@@ -231,7 +225,8 @@ function gestionarTemario(id) {
 async function eliminarCurso(id) {
     if (confirm('¿Estás seguro de que quieres eliminar este curso? Esta acción no se puede deshacer.')) {
         try {
-            const respuesta = await fetch(BASE_URL + 'app/api/cursos.php?id=' + id, { method: 'DELETE' });
+            // RUTA LIMPIA
+            const respuesta = await fetch('/api/cursos.php?id=' + id, { method: 'DELETE' });
             const resultado = await respuesta.json();
             if (resultado.status === 'success') {
                 alert(resultado.mensaje);
@@ -245,19 +240,19 @@ async function eliminarCurso(id) {
     }
 }
 
-// Función para eliminar un comentario 
 async function eliminarComentarioForo(idComentario) {
     if (confirm("¿Estás seguro de que quieres eliminar este mensaje? Si es la duda principal, se borrará todo el hilo.")) {
         try {
-            const res = await fetch(BASE_URL + 'app/api/foro_video.php', {
+            // RUTA LIMPIA
+            const res = await fetch('/api/foro_video.php', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id_comentario: idComentario })
             });
             const data = await res.json();
-            
+
             if (data.status === 'success') {
-                cargarComentariosProfesor(); // Recargamos la bandeja y los carteles
+                cargarComentariosProfesor();
             } else {
                 alert(data.mensaje);
             }

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // 1. CARGAR TEMARIO Y VÍDEOS
     try {
-        const respuesta = await fetch(BASE_URL + 'app/api/videos.php?id_curso=' + idCurso);
+        const respuesta = await fetch('/api/videos.php?id_curso=' + idCurso);
         const resultado = await respuesta.json();
 
         document.getElementById('cargando-temario').classList.add('d-none');
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const claseActivo = index === 0 ? 'bg-light border-start border-primary border-4 fw-bold' : 'boton-leccion-light border-start border-transparent border-4';
                 const descLimpia = (video.descripcion || "Sin descripción adicional.").replace(/(\r\n|\n|\r)/gm, " ");
-                
+
                 const numLeccion = index + 1; // Para saber qué número de vídeo es (1, 2, 3...)
 
                 // AÑADIDO: Pasamos numLeccion y totalVideos a la función cambiarVideo
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             btnEnviarComentario.disabled = true;
             try {
-                const res = await fetch(BASE_URL + 'app/api/foro_video.php', {
+                const res = await fetch('/api/foro_video.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id_video: idVideo, texto: texto })
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (!texto) return;
 
                     try {
-                        const res = await fetch(BASE_URL + 'app/api/foro_video.php', {
+                        const res = await fetch('/api/foro_video.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ id_video: idVideo, texto: texto, id_padre: idPadre })
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 pintarEstrellasVideo(puntuacion);
 
                 try {
-                    const res = await fetch(BASE_URL + 'app/api/foro_video.php', {
+                    const res = await fetch('/api/foro_video.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ accion: 'valorar', id_video: idVideo, estrellas: puntuacion })
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         modalValoracion.addEventListener('show.bs.modal', async function () {
             feedback.innerHTML = '';
             try {
-                const res = await fetch(BASE_URL + 'app/api/valoraciones.php?id_curso=' + idCurso + '&accion=miresena');
+                const res = await fetch('/api/valoraciones.php?id_curso=' + idCurso + '&accion=miresena');
                 const json = await res.json();
                 if (json.status === 'success' && json.data) {
                     textoComentario.value = json.data.texto || '';
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             btnGuardar.innerText = "Guardando...";
 
             try {
-                const res = await fetch(BASE_URL + 'app/api/valoraciones.php', {
+                const res = await fetch('/api/valoraciones.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id_curso: idCurso, estrellas: puntuacion, texto: texto })
@@ -269,9 +269,9 @@ function cambiarVideo(urlEmbed, titulo, boton, idVideo, descripcion = "", numLec
     // =========================================================
     const idCurso = document.getElementById('id_curso_oculto').value;
     const porcentajeNuevo = Math.round((numLeccion / totalVideos) * 100);
-    
+
     // Llamada silenciosa al servidor para actualizar
-    fetch(BASE_URL + 'app/api/inscripciones.php', {
+    fetch('/api/inscripciones.php', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ accion: 'actualizar_progreso', id_curso: idCurso, progreso: porcentajeNuevo })
@@ -282,7 +282,7 @@ async function cargarNotaVideo(idVideo) {
     pintarEstrellasVideo(0);
     document.getElementById('feedback-video').innerHTML = '';
     try {
-        const res = await fetch(BASE_URL + `app/api/foro_video.php?id_video=${idVideo}&accion=mivoto`);
+        const res = await fetch(`/api/foro_video.php?id_video=${idVideo}&accion=mivoto`);
         const json = await res.json();
         if (json.status === 'success' && json.data.estrellas) pintarEstrellasVideo(json.data.estrellas);
     } catch (err) { }
@@ -295,7 +295,7 @@ async function cargarForo(idVideo) {
     contenedor.innerHTML = '<div class="text-center text-muted py-3"><div class="spinner-border spinner-border-sm text-primary" role="status"></div> Cargando dudas...</div>';
 
     try {
-        const res = await fetch(BASE_URL + `app/api/foro_video.php?id_video=${idVideo}`);
+        const res = await fetch(`/api/foro_video.php?id_video=${idVideo}`);
         const json = await res.json();
 
         if (json.status === 'success') {
