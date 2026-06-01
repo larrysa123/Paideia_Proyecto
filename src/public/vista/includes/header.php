@@ -35,34 +35,37 @@ require_once __DIR__ . '/../../../app/config/config.php';
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                
+
                 <ul class="navbar-nav ms-auto align-items-center text-center">
                     <?php if (isset($_SESSION['user'])): ?>
 
                         <?php $rol = $_SESSION['user']['id_rol']; ?>
 
-                        <?php if ($rol == 1): // ALUMNO ?>
+                        <?php if ($rol == 1): // ALUMNO 
+                        ?>
                             <li class="nav-item mb-2 mb-lg-0">
-                                <a class="nav-link" href="<?= RUTA_VISTAS ?>alumno/mis_cursos.php">Mis Cursos</a>
+                                <a class="nav-link nav-link-alumno" href="<?= RUTA_VISTAS ?>alumno/mis_cursos.php">Mis Cursos</a>
                             </li>
 
-                        <?php elseif ($rol == 2): // PROFESOR ?>
+                        <?php elseif ($rol == 2): // PROFESOR 
+                        ?>
                             <li class="nav-item mb-2 mb-lg-0">
-                                <a class="nav-link nav-link-profesor fw-bold" href="<?= RUTA_VISTAS ?>profesor/panel.php">Panel de Profesor</a>
+                                <a class="nav-link nav-link-profesor" href="<?= RUTA_VISTAS ?>profesor/panel.php">Panel de Profesor</a>
                             </li>
 
-                        <?php elseif ($rol == 3): // ADMINISTRADOR ?>
+                        <?php elseif ($rol == 3): // ADMINISTRADOR 
+                        ?>
                             <li class="nav-item mb-2 mb-lg-0">
-                                <a class="nav-link nav-link-admin fw-bold" href="<?= RUTA_VISTAS ?>admin/panel.php">Panel de Control</a>
+                                <a class="nav-link nav-link-admin" href="<?= RUTA_VISTAS ?>admin/panel.php">Panel de Control</a>
                             </li>
                         <?php endif; ?>
 
                         <li class="nav-item d-flex align-items-center ms-lg-3 mb-2 mb-lg-0">
-                            <span class="nav-link text-white fw-bold" style="cursor: default;">
+                            <span class="nav-link nav-link-saludo">
                                 ¡Hola, <?= $_SESSION['user']['nombre'] ?>!
                             </span>
                         </li>
-                        
+
                         <li class="nav-item mt-2 mt-lg-0">
                             <a class="nav-link nav-link-logout ms-lg-2 px-3" href="/api/logout.php">Cerrar sesión</a>
                         </li>
@@ -72,7 +75,7 @@ require_once __DIR__ . '/../../../app/config/config.php';
                         <li class="nav-item">
                             <a class="nav-link ms-lg-2 px-3" href="<?= RUTA_VISTAS ?>login.php">Iniciar Sesión</a>
                         </li>
-                        
+
                         <li class="nav-item mt-3 mt-lg-0">
                             <a class="btn btn-paideia-secondary ms-lg-1 px-4" href="<?= RUTA_VISTAS ?>registro.php">Registrarse</a>
                         </li>

@@ -4,8 +4,10 @@
    --- VARIABLES PAIDEIA ---
    ========================================================================== */
 :root {
-    --color-primary: #2C5282;      /* Azul Egeo */
-    --color-secondary: #D69E2E;    /* Dorado Atenea */
+    --color-primary: #2C5282;
+    /* Azul Egeo */
+    --color-secondary: #D69E2E;
+    /* Dorado Atenea */
 
     --bs-primary: #2C5282;
     --bs-primary-rgb: 44, 82, 130;
@@ -22,7 +24,12 @@ body {
 /* ==========================================================================
    --- TIPOGRAFÍA Y LOGO ---
    ========================================================================== */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: var(--font-body);
     color: var(--color-primary);
     font-weight: normal;
@@ -77,29 +84,59 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-secondary) !important;
 }
 
-/* 2. Enlace Profesor */
-.navbar .nav-link-profesor {
+/* 2. Saludo de Usuario */
+.navbar .nav-link-saludo {
+    color: white !important;
+    font-weight: bold;
+    cursor: default;
+}
+
+.navbar .nav-link-saludo:hover {
+    color: white !important;
+}
+
+
+/* 3. Panel Alumno */
+.navbar .nav-link-alumno {
     color: var(--color-secondary) !important;
-    transition: color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.navbar .nav-link-alumno:hover {
+    color: var(--color-secondary) !important; /* Mantiene el dorado */
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
+
+/* 4. Panel Profesor */
+.navbar .nav-link-profesor {
+    color: #4ADE80 !important;
+    font-weight: bold;
+    transition: transform 0.2s ease, filter 0.2s ease;
 }
 
 .navbar .nav-link-profesor:hover {
-    color: white !important;
+    color: #4ADE80 !important; /* Mantiene el verde esmeralda */
     transform: scale(1.05);
+    filter: brightness(1.2);
 }
 
-/* 3. Enlace Admin */
+/* 5. Panel Admin */
 .navbar .nav-link-admin {
     color: #0dcaf0 !important;
-    transition: color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
+    transition: transform 0.2s ease, filter 0.2s ease;
 }
 
 .navbar .nav-link-admin:hover {
-    color: white !important;
+    color: #0dcaf0 !important; /* Mantiene el cyan */
     transform: scale(1.05);
+    filter: brightness(1.2);
 }
 
-/* 4. Enlace Cerrar Sesión  */
+
+/* 6. Enlace Cerrar Sesión  */
 .navbar .nav-link-logout {
     color: rgba(255, 255, 255, 0.85) !important;
     transition: color 0.3s ease;
@@ -150,7 +187,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-paideia-secondary:hover,
 .btn-paideia-secondary:focus {
-    background-color: #9C6F19 !important; 
+    background-color: #9C6F19 !important;
     color: white !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
@@ -260,26 +297,54 @@ h1, h2, h3, h4, h5, h6 {
     max-width: fit-content;
 }
 
-.inf p { margin-top: -3px; margin-bottom: -3px; }
-.inf h4 { font-size: 17px; }
+.inf p {
+    margin-top: -3px;
+    margin-bottom: -3px;
+}
+
+.inf h4 {
+    font-size: 17px;
+}
 
 /* ==========================================================================
    --- ESTILOS ESPECÍFICOS DEL PANEL ---
    ========================================================================== */
-.titulo-panel { font-family: var(--font-body); font-weight: 400; }
+.titulo-panel {
+    font-family: var(--font-body);
+    font-weight: 400;
+}
 
 /* Pestañas (Tabs) del Panel */
-#panel-tabs .nav-link { color: #6c757d; }
+#panel-tabs .nav-link {
+    color: #6c757d;
+}
+
 #panel-tabs .nav-link.active {
     color: var(--color-primary) !important;
     font-weight: bold;
     border-bottom-color: var(--color-primary);
 }
 
-.card-title-panel { font-family: var(--font-body); font-size: 1.1rem; font-weight: 400; }
-.card-desc-panel { font-size: 0.9rem; }
-.precio-texto { color: var(--color-primary); font-weight: 600; font-size: 1.1rem; }
-.curso-meta { font-size: 0.85rem; color: #6c757d; }
+.card-title-panel {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.card-desc-panel {
+    font-size: 0.9rem;
+}
+
+.precio-texto {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.curso-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
 
 /* ==========================================================================
    --- ESTILOS DE LA SALA DE CLASES (REPRODUCTOR) ---
@@ -289,8 +354,14 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #F7F9FC;
 }
 
-.titulo-curso-reproductor { color: var(--color-primary); }
-.lista-lecciones-scroll { max-height: 550px; overflow-y: auto; }
+.titulo-curso-reproductor {
+    color: var(--color-primary);
+}
+
+.lista-lecciones-scroll {
+    max-height: 550px;
+    overflow-y: auto;
+}
 
 .boton-leccion-light {
     border-bottom: 1px solid #eee !important;
@@ -298,7 +369,9 @@ h1, h2, h3, h4, h5, h6 {
     color: #4a5568;
 }
 
-.boton-leccion-light:hover { background-color: #f8fafc; }
+.boton-leccion-light:hover {
+    background-color: #f8fafc;
+}
 
 #estrellas-curso i,
 #modal-estrellas-curso i {
@@ -316,8 +389,10 @@ h1, h2, h3, h4, h5, h6 {
    --- RESPONSIVE: ADAPTACIONES PARA MÓVIL (APP NATIVA) ---
    ========================================================================== */
 @media (max-width: 991.98px) {
-    .navbar-nav .nav-item { width: 100%; }
-    
+    .navbar-nav .nav-item {
+        width: 100%;
+    }
+
     .navbar-nav .btn-paideia-secondary {
         display: block;
         width: 100%;
