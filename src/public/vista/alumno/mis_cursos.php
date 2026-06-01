@@ -19,11 +19,6 @@ require_once __DIR__ . '/../includes/header.php';
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="certificados-tab" data-bs-toggle="tab" data-bs-target="#certificados" type="button" role="tab">
-                <i class="bi bi-award me-2"></i>Certificados
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
             <button class="nav-link" id="historial-tab" data-bs-toggle="tab" data-bs-target="#historial" type="button" role="tab">
                 <i class="bi bi-receipt me-2"></i>Mis Recibos
             </button>
@@ -43,14 +38,6 @@ require_once __DIR__ . '/../includes/header.php';
                 <div id="cargando-mis-cursos" class="col-12 text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
                 </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="certificados" role="tabpanel" tabindex="0">
-            <div class="text-center py-5">
-                <i class="bi bi-award text-muted" style="font-size: 3rem;"></i>
-                <h5 class="mt-3 text-muted">Aún no tienes certificados</h5>
-                <p class="text-muted">Completa el 100% de un curso para obtener tu diploma.</p>
             </div>
         </div>
 
