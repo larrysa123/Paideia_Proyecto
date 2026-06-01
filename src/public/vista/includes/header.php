@@ -15,8 +15,8 @@ require_once __DIR__ . '/../../../app/config/config.php';
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 
-    <link rel="icon" type="image/png" href="<?= RUTA_IMAGENES ?>favicon.png">
-    <link href="<?= RUTA_CSS ?>estilos.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="<?= RUTA_IMAGENES ?>logo-dorado.png">
+    <link href="<?= RUTA_CSS ?>estilos.css?v=<?= time() ?>" rel="stylesheet">
 
     <script>
         const BASE_URL = '<?= BASE_URL ?>';
@@ -28,58 +28,53 @@ require_once __DIR__ . '/../../../app/config/config.php';
     <nav class="navbar navbar-expand-lg navbar-dark bg-paideia">
         <div class="container">
             <a class="navbar-brand fw-bold fs-3 d-flex align-items-center" href="<?= RUTA_INICIO ?>">
-                <img src="<?= RUTA_IMAGENES ?>logo-blanco.png" alt="Logo Paideía" class="logo-navbar">
+                <img src="<?= RUTA_IMAGENES ?>logo-dorado.png" alt="Logo Paideía" class="logo-navbar">
                 <span class="texto-marca">Paideía</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                
+                <ul class="navbar-nav ms-auto align-items-center text-center">
                     <?php if (isset($_SESSION['user'])): ?>
 
-                        <?php
-                        // Extraemos el rol de la sesión para usarlo cómodamente
-                        $rol = $_SESSION['user']['id_rol'];
-                        ?>
+                        <?php $rol = $_SESSION['user']['id_rol']; ?>
 
-                        <?php if ($rol == 1): // ALUMNO 
-                        ?>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="<?= RUTA_VISTAS ?>alumno/mis_cursos.php">Mis Cursos</a>
+                        <?php if ($rol == 1): // ALUMNO ?>
+                            <li class="nav-item mb-2 mb-lg-0">
+                                <a class="nav-link" href="<?= RUTA_VISTAS ?>alumno/mis_cursos.php">Mis Cursos</a>
                             </li>
 
-                        <?php elseif ($rol == 2): // PROFESOR 
-                        ?>
-                            <li class="nav-item">
-                                <a class="nav-link text-warning fw-bold" href="<?= RUTA_VISTAS ?>profesor/panel.php">Panel de Profesor</a>
+                        <?php elseif ($rol == 2): // PROFESOR ?>
+                            <li class="nav-item mb-2 mb-lg-0">
+                                <a class="nav-link nav-link-profesor fw-bold" href="<?= RUTA_VISTAS ?>profesor/panel.php">Panel de Profesor</a>
                             </li>
 
-                        <?php elseif ($rol == 3): // ADMINISTRADOR 
-                        ?>
-                            <li class="nav-item">
-                                <a class="nav-link text-info fw-bold" href="<?= RUTA_VISTAS ?>admin/panel.php">Panel de Control</a>
+                        <?php elseif ($rol == 3): // ADMINISTRADOR ?>
+                            <li class="nav-item mb-2 mb-lg-0">
+                                <a class="nav-link nav-link-admin fw-bold" href="<?= RUTA_VISTAS ?>admin/panel.php">Panel de Control</a>
                             </li>
                         <?php endif; ?>
 
-                        <li class="nav-item d-flex align-items-center ms-lg-3">
+                        <li class="nav-item d-flex align-items-center ms-lg-3 mb-2 mb-lg-0">
                             <span class="nav-link text-white fw-bold" style="cursor: default;">
                                 ¡Hola, <?= $_SESSION['user']['nombre'] ?>!
                             </span>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-outline-light ms-2 px-3" href="/api/logout.php">
-                                Cerrar sesión
-                            </a>
+                        
+                        <li class="nav-item mt-2 mt-lg-0">
+                            <a class="nav-link nav-link-logout ms-lg-2 px-3" href="/api/logout.php">Cerrar sesión</a>
                         </li>
 
                     <?php else: ?>
 
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="<?= RUTA_VISTAS ?>registro.php">Registrarse</a>
+                            <a class="nav-link ms-lg-2 px-3" href="<?= RUTA_VISTAS ?>login.php">Iniciar Sesión</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-outline-light ms-2 px-3" href="<?= RUTA_VISTAS ?>login.php">Acceder</a>
+                        
+                        <li class="nav-item mt-3 mt-lg-0">
+                            <a class="btn btn-paideia-secondary ms-lg-1 px-4" href="<?= RUTA_VISTAS ?>registro.php">Registrarse</a>
                         </li>
 
                     <?php endif; ?>

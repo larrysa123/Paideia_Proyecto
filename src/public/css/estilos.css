@@ -1,11 +1,11 @@
 /* src/public/css/estilos.css */
 
-/* --- VARIABLES PAIDEIA --- */
+/* ==========================================================================
+   --- VARIABLES PAIDEIA ---
+   ========================================================================== */
 :root {
-    --color-primary: #2C5282;
-    /* Azul Egeo */
-    --color-secondary: #D69E2E;
-    /* Dorado Atenea */
+    --color-primary: #2C5282;      /* Azul Egeo */
+    --color-secondary: #D69E2E;    /* Dorado Atenea */
 
     --bs-primary: #2C5282;
     --bs-primary-rgb: 44, 82, 130;
@@ -19,70 +19,108 @@ body {
     background-color: #F7F9FC;
 }
 
-/* --- TIPOGRAFÍA --- */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
+/* ==========================================================================
+   --- TIPOGRAFÍA Y LOGO ---
+   ========================================================================== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-body);
+    color: var(--color-primary);
+    font-weight: normal;
+    letter-spacing: -0.3px;
+}
+
 .navbar-brand {
     font-family: var(--font-heading);
-    color: var(--color-primary);
-}
-
-/* --- COMPONENTES BOOTSTRAP PERSONALIZADOS --- */
-
-/* Navbar */
-.bg-paideia {
-    background-color: var(--color-primary) !important;
-}
-
-/* Altura total de la barra de navegación */
-.navbar.bg-paideia {
-    padding-top: 0.42rem;
-    padding-bottom: 0.42rem;
-}
-
-/* Posición del logo  */
-.logo-navbar {
-    height: 50px;         
-    width: auto;
-    margin-right: 10px;
-   
-}
-
-/* Ajuste del texto de la marca */
-.texto-marca {
-    margin-top: 5px;
-}
-
-.navbar-brand {
     color: white !important;
+    transition: color 0.3s ease;
 }
 
 .navbar-brand:hover {
     color: var(--color-secondary) !important;
 }
 
-.navbar .btn-outline-light:hover {
-    background-color: #D69E2E;
-    color: var(--color-primary) !important;
-    border-color: white;
+/* ==========================================================================
+   --- COMPONENTES DE LA BARRA DE NAVEGACIÓN (NAVBAR) ---
+   ========================================================================== */
+.bg-paideia {
+    background-color: var(--color-primary) !important;
 }
 
+.navbar.bg-paideia {
+    padding-top: 0.42rem;
+    padding-bottom: 0.42rem;
+}
 
+.logo-navbar {
+    height: 50px;
+    width: auto;
+    margin-right: 10px;
+}
+
+.texto-marca {
+    margin-top: 5px;
+}
+
+/* ==========================================================================
+   --- ENLACES ESPECÍFICOS POR ROL Y MENÚ ---
+   ========================================================================== */
+
+/* 1. Enlaces estándar (Mis Cursos, Iniciar Sesión) */
+.navbar .nav-link {
+    color: white !important;
+    font-weight: normal;
+    transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+    color: var(--color-secondary) !important;
+}
+
+/* 2. Enlace Profesor */
+.navbar .nav-link-profesor {
+    color: var(--color-secondary) !important;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.navbar .nav-link-profesor:hover {
+    color: white !important;
+    transform: scale(1.05);
+}
+
+/* 3. Enlace Admin */
+.navbar .nav-link-admin {
+    color: #0dcaf0 !important;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.navbar .nav-link-admin:hover {
+    color: white !important;
+    transform: scale(1.05);
+}
+
+/* 4. Enlace Cerrar Sesión  */
+.navbar .nav-link-logout {
+    color: rgba(255, 255, 255, 0.85) !important;
+    transition: color 0.3s ease;
+}
+
+.navbar .nav-link-logout:hover {
+    color: #CB4141 !important;
+}
+
+/* ==========================================================================
+   --- COMPONENTES BOTONERÍA GLOBAL ---
+   ========================================================================== */
+/* Botón Principal */
 .btn-primary {
     --bs-btn-bg: var(--color-primary) !important;
     --bs-btn-border-color: var(--color-primary) !important;
-
-    /* Hacemos que el Hover sea un azul bonito, no casi negro */
     --bs-btn-hover-bg: #22426A !important;
     --bs-btn-hover-border-color: #22426A !important;
     --bs-btn-active-bg: #1A365D !important;
     --bs-btn-active-border-color: #1A365D !important;
 }
-
 
 .btn-paideia {
     background-color: var(--color-primary);
@@ -101,7 +139,24 @@ h6,
     box-shadow: 0 4px 6px rgba(44, 82, 130, 0.3);
 }
 
-/* Botón de Peligro (Eliminar) */
+/* Botón de Registro */
+.btn-paideia-secondary {
+    background-color: #C48D22 !important;
+    color: white !important;
+    font-weight: normal !important;
+    border: none !important;
+    transition: all 0.3s ease;
+}
+
+.btn-paideia-secondary:hover,
+.btn-paideia-secondary:focus {
+    background-color: #9C6F19 !important; 
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Botón de Peligro */
 .btn-paideia-danger {
     background-color: #CB4141;
     color: white;
@@ -114,136 +169,6 @@ h6,
     background-color: #BA2D2D;
     color: white;
     transform: translateY(-1px);
-}
-
-/* Tarjetas (Cards) */
-.card {
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    border-bottom: 3px solid var(--color-secondary);
-}
-
-/* Estilos específicos para formularios (Registro/Login) */
-.contenedor-form {
-    background: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border-top: 5px solid var(--color-primary);
-}
-
-/* Caja de información centrada */
-.inf {
-    margin: 0 auto;
-    font-size: 12px;
-    background-color: #f0f6fc;
-    border-radius: 12px;
-    padding: 20px;
-    color: #3b4252;
-    font-family: sans-serif;
-    line-height: 1.6;
-    max-width: fit-content;
-}
-
-.inf p {
-    margin-top: -3px;
-    margin-bottom: -3px;
-}
-
-.inf h4 {
-    font-size: 17px;
-}
-
-/* ==========================================================================
-   ESTILOS ESPECÍFICOS DEL PANEL 
-   ========================================================================== */
-
-/* Título principal del panel */
-.titulo-panel {
-    font-family: var(--font-body);
-    font-weight: 400;
-}
-
-/* Pestañas (Tabs) personalizadas con el color Egeo */
-#panel-tabs .nav-link {
-    color: #6c757d;
-    /* Gris para pestañas inactivas */
-}
-
-#panel-tabs .nav-link.active {
-    color: var(--color-primary) !important;
-    font-weight: bold;
-    border-bottom-color: var(--color-primary);
-}
-
-/* Textos dentro de las tarjetas del panel */
-.card-title-panel {
-    font-family: var(--font-body);
-    font-size: 1.1rem;
-    font-weight: 400;
-}
-
-.card-desc-panel {
-    font-size: 0.9rem;
-}
-
-.precio-texto {
-    color: var(--color-primary);
-    /* Pasado al azul egeo para más profesionalidad */
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-
-.curso-meta {
-    font-size: 0.85rem;
-    color: #6c757d;
-    /* text-muted */
-}
-
-/* ==========================================================================
-   ESTILOS DEL FORMULARIO DE CREACIÓN DE CURSOS
-   ========================================================================== */
-
-/* Botón de Volver al Panel */
-.btn-volver {
-    color: var(--color-primary);
-    font-family: var(--font-body);
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    transition: color 0.2s ease;
-}
-
-.btn-volver:hover {
-    color: var(--color-secondary);
-}
-
-/* Título principal del formulario */
-.titulo-form-paideia {
-    color: var(--color-primary);
-    font-weight: bold;
-    font-family: var(--font-body);
-}
-
-/* Etiquetas de los inputs (Labels) */
-.form-label-paideia {
-    font-family: var(--font-body);
-    font-weight: bold;
-    color: #333333;
-}
-
-/* Texto de ayuda debajo de los inputs */
-.form-text-paideia {
-    font-size: 0.8rem;
-    color: #6c757d;
 }
 
 /* Botón Oscuro Personalizado (Para el Temario) */
@@ -263,56 +188,148 @@ h6,
     box-shadow: 0 4px 6px rgba(26, 32, 44, 0.3);
 }
 
+/* Botón Enlace de Volver al Panel */
+.btn-volver {
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+.btn-volver:hover {
+    color: var(--color-secondary);
+}
 
 /* ==========================================================================
-   ESTILOS DE LA SALA DE CLASES (REPRODUCTOR)
+   --- TARJETAS (CARDS) ---
    ========================================================================== */
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    border-bottom: 3px solid var(--color-secondary);
+}
+
+/* ==========================================================================
+   --- FORMULARIOS (LOGIN / REGISTRO / CREACIÓN) ---
+   ========================================================================== */
+.contenedor-form {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-top: 5px solid var(--color-primary);
+}
+
+.titulo-form-paideia {
+    color: var(--color-primary);
+    font-weight: bold;
+    font-family: var(--font-body);
+}
+
+.form-label-paideia {
+    font-family: var(--font-body);
+    font-weight: bold;
+    color: #333333;
+}
+
+.form-text-paideia {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* Caja de información técnica centrada */
+.inf {
+    margin: 0 auto;
+    font-size: 12px;
+    background-color: #f0f6fc;
+    border-radius: 12px;
+    padding: 20px;
+    color: #3b4252;
+    font-family: sans-serif;
+    line-height: 1.6;
+    max-width: fit-content;
+}
+
+.inf p { margin-top: -3px; margin-bottom: -3px; }
+.inf h4 { font-size: 17px; }
+
+/* ==========================================================================
+   --- ESTILOS ESPECÍFICOS DEL PANEL ---
+   ========================================================================== */
+.titulo-panel { font-family: var(--font-body); font-weight: 400; }
+
+/* Pestañas (Tabs) del Panel */
+#panel-tabs .nav-link { color: #6c757d; }
+#panel-tabs .nav-link.active {
+    color: var(--color-primary) !important;
+    font-weight: bold;
+    border-bottom-color: var(--color-primary);
+}
+
+.card-title-panel { font-family: var(--font-body); font-size: 1.1rem; font-weight: 400; }
+.card-desc-panel { font-size: 0.9rem; }
+.precio-texto { color: var(--color-primary); font-weight: 600; font-size: 1.1rem; }
+.curso-meta { font-size: 0.85rem; color: #6c757d; }
+
+/* ==========================================================================
+   --- ESTILOS DE LA SALA DE CLASES (REPRODUCTOR) ---
+   ========================================================================== */
 .pantalla-clase-contenedor {
     min-height: calc(100vh - 70px);
     background-color: #F7F9FC;
-    /* Fondo grisáceo suave igual que el panel */
 }
 
-.titulo-curso-reproductor {
-    color: var(--color-primary);
-}
+.titulo-curso-reproductor { color: var(--color-primary); }
+.lista-lecciones-scroll { max-height: 550px; overflow-y: auto; }
 
-.lista-lecciones-scroll {
-    max-height: 550px;
-    overflow-y: auto;
-}
-
-/* Estilo para los ítems de la lista cuando no estamos en modo oscuro */
 .boton-leccion-light {
     border-bottom: 1px solid #eee !important;
     font-weight: 500;
     color: #4a5568;
 }
 
-.boton-leccion-light:hover {
-    background-color: #f8fafc;
-}
+.boton-leccion-light:hover { background-color: #f8fafc; }
 
-#estrellas-curso i {
-    cursor: pointer;
-    transition: transform 0.2s;
-    margin-right: 2px;
-}
-
-#estrellas-curso i:hover {
-    transform: scale(1.2);
-}
-
-/* ==========================================================================
-   ESTILOS VENTANA MODAL (RESEÑA)
-   ========================================================================== */
+#estrellas-curso i,
 #modal-estrellas-curso i {
     cursor: pointer;
     transition: transform 0.2s;
     margin-right: 4px;
 }
 
+#estrellas-curso i:hover,
 #modal-estrellas-curso i:hover {
     transform: scale(1.2);
+}
+
+/* ==========================================================================
+   --- RESPONSIVE: ADAPTACIONES PARA MÓVIL (APP NATIVA) ---
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .navbar-nav .nav-item { width: 100%; }
+    
+    .navbar-nav .btn-paideia-secondary {
+        display: block;
+        width: 100%;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        margin-top: 5px;
+    }
+
+    .navbar-nav .nav-link {
+        display: block;
+        width: 100%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
 }
