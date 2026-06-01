@@ -15,7 +15,7 @@ require_once __DIR__ . '/../includes/header.php';
         <i class="bi bi-shield-lock-fill text-paideia me-2"></i> Panel de Control (Administrador)
     </h5>
 
-    <ul class="nav nav-underline mb-4 border-bottom" id=\"admin-tabs\" role=\"tablist\">
+    <ul class="nav nav-underline mb-4 border-bottom" id="admin-tabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios" type="button" role="tab">
                 <i class="bi bi-people me-2"></i>Usuarios (<span id="count-usuarios">0</span>)
@@ -80,8 +80,10 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-dark text-white py-3">
-                <h5 class="modal-title fw-bold mb-0"><i class="bi bi-pencil-square text-warning me-2"></i>Editar Ficha de Usuario</h5>
+            <div class="modal-header bg-paideia py-3">
+                <h5 class="modal-title fw-bold mb-0 text-white">
+                    <i class="bi bi-pencil-square me-2" style="color: var(--color-secondary);"></i>Editar Ficha de Usuario
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
