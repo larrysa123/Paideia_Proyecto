@@ -1,0 +1,30 @@
+MANUAL DE USUARIO - PLATAFORMA PAIDEIA
+======================================
+
+El presente manual describe las operativas basicas de la plataforma Paideia, estructuradas segun los tres niveles de acceso o perfiles de usuario disponibles en el sistema.
+
+1. ACCESO GENERAL Y AUTENTICACION
+---------------------------------
+* Registro de nuevos usuarios: Desde la pagina principal, se debe acceder a la seccion "Registrarse". El sistema solicita nombre, apellidos, correo electronico y contrasena. Por defecto, todas las nuevas cuentas se registran con el rol de "Alumno".
+* Inicio de sesion: Introduciendo las credenciales en la pantalla de Login, el sistema redirige automaticamente al panel correspondiente en funcion del rol detectado.
+
+2. PERFIL ALUMNO
+----------------
+* Exploracion y adquisicion de cursos: El catalogo principal (index.php) es publico. Al seleccionar un curso, se accede a su vista de detalle. Si el alumno tiene la sesion iniciada, puede pulsar el boton "Inscribirse" para simular el pago a traves de la pasarela integrada en la ventana modal.
+* Area personal ("Mis Cursos"): Tras la compra, el contenido se desbloquea en el panel del alumno. Esta vista permite:
+  - Consultar el progreso general mediante la barra de estado.
+  - Acceder al aula virtual para la visualizacion del temario audiovisual.
+  - Revisar el historial cronologico de facturacion (recibos).
+* Aula virtual y participacion: Dentro del curso, el alumnado puede navegar entre las distintas lecciones en video. En la parte inferior de cada clase, se habilita un foro de dudas para interactuar con el docente y una herramienta para otorgar una valoracion (de 1 a 5 estrellas) a la formacion.
+
+3. PERFIL PROFESOR
+------------------
+* Gestion del catalogo propio: Desde el panel de administracion docente, se visualiza el inventario de cursos creados. Para dar de alta una nueva formacion, se requiere completar un formulario que incluye el titulo, la descripcion, el precio y la subida fisica del archivo de imagen que actuara como portada.
+* Estructuracion del temario: Una vez creado el curso, se gestionan las lecciones. El profesorado puede anadir enlaces de YouTube y reordenar visualmente el temario mediante la funcion de arrastrar y soltar (Drag & Drop). El sistema recalcula el orden automaticamente.
+* Tutorizacion y resolucion de dudas: El panel principal cuenta con una pestana especifica denominada "Comentarios". Esta bandeja de entrada centraliza todas las dudas planteadas por el alumnado, ordenadas para priorizar aquellas que aun no han recibido respuesta.
+
+4. PERFIL ADMINISTRADOR
+-----------------------
+* Panel de control global: El usuario con privilegios maximos (Rol 3) accede a un panel estadistico que contabiliza el volumen total de usuarios y cursos de la plataforma.
+* Auditoria de usuarios: Permite visualizar el listado completo de cuentas registradas, modificar sus datos personales, cambiar sus roles operativos (por ejemplo, ascender a un alumno a profesor) o proceder a su eliminacion definitiva.
+* Auditoria de cursos: Permite visualizar todo el inventario de la academia, conocer la autoria de cada curso y gestionar su estado de visibilidad, pudiendo habilitar, deshabilitar o eliminar recursos formativos que incumplan las normativas de la plataforma.
